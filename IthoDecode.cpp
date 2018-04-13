@@ -19,6 +19,17 @@ String IthoDecode::toPrintString(const String &s)
     return r;
 }
 
+uint8_t IthoDecode::crc(const String &rawByteString)
+{
+    uint8_t r = 0;
+    for (size_t i = 0; i < rawByteString.length(); i++)
+    {
+        char c = rawByteString.charAt(i);
+        r += (uint8_t)c;
+    }
+    return r;
+}
+
 String IthoDecode::decode(uint8_t *data, uint8_t length)
 {
     for (int i = 0; i < 8; i++)
@@ -117,17 +128,13 @@ String IthoDecode::decode2(uint8_t *data, uint8_t length)
         //printf("\n\n");
         //Serial.println(b.toString2());
     }
-    //printf("After preamble:\n");
-    //Serial.println(b.toString());
 
-    // first 4 and drop odd bits
+    // drop odd bits
     BitArray b2((l2) / 2);
     for (unsigned int i = 0; i < l2 / 2; i++)
     {
         b2.set(i, b.get((i * 2)));
     }
-    //printf("After drop bits:\n");
-    //Serial.println(b2.toString());
 
     // div into group of 5, drop last bit and reverse
     unsigned int nf = (b2.length() / 5);
@@ -142,10 +149,9 @@ String IthoDecode::decode2(uint8_t *data, uint8_t length)
     }
     
     String rs = b3.toStringRaw();
-    String ps = toPrintString(rs);
-
-    Serial.print("str convert :");
-    Serial.println(ps);
+    //String ps = toPrintString(rs);
+    //Serial.print("str convert :");
+    //Serial.println(ps);
     return rs;
 }
 

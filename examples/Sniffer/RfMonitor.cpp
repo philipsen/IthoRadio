@@ -107,6 +107,7 @@ void RfMonitor::loop()
             resetBuffer();
             return;
         }
+        uint8_t preAmble[] = {0xfe, 0x00, 0xb3, 0x2a, 0xab, 0x2a};  
 
         //printf("loop check for end seq at %d %d\n", checkIdx+1, rfDataWriteIdx);
         for (; checkIdx+2 < rfDataWriteIdx; checkIdx++)
@@ -117,9 +118,43 @@ void RfMonitor::loop()
             {
                 //printf("loop: rfDataWriteIdx %d -> %d\n", oldSize, rfDataWriteIdx);
                 //printf("loop: detect end seq at %d\n", i);
+                Serial.println("");
                 Serial.println(toString(rfData, i+3, true));
-                IthoDecode::decode2(rfData, i+3);
+                bool isIthoRemote = true;
+                for (size_t i = 0; i < 6; i++)
+                {
+                    if(rfData[i] != preAmble[i]) {
+                        isIthoRemote = false;
+                        break;
+                    }
+                }
+                printf("preamble check = %d\n", isIthoRemote);
+                if (isIthoRemote)
+                {
+                    String s = IthoDecode::decode2(rfData, i);
+                    uint8_t crc = IthoDecode::crc(s);
+                    //Serial.println(crc);
+                    printf("crc val = %d\n", crc);
+                    if (s.charAt(0) == 0x16)
+                    {
+                        Serial.println("got remote command");
+                        //String dc = IthoDecode::decode(rfData, i+3);
+                        //Serial.println(dc);
+                    }
+                    else
+                    {
+                        Serial.println("got other packet");
+                        Serial.println(IthoDecode::toPrintString(s));
+                    }
+                }
+                
+                //printf("got packet l=%d, crc=%d p=\n", i+3, crc);
+                // 
 
+                // Serial.println(isIthoRemote);
+                // if (isIthoRemote) {
+                //     
+                // }
                 resetBuffer();
                 return;
             }
