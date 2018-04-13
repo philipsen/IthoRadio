@@ -1,0 +1,17 @@
+{
+    "name": "IthoRadio",
+    "keywords": "Itho, CC1101, radio",
+    "description": "Arduino library for analysing and using Itho ventilation remote control radio traffic",
+    "authors":
+    {
+        "name": "Wim Philipsen",
+        "email": "itho@maak-t.com"
+    },
+    "repository":
+    {
+        "type": "git",
+        "url": "https://github.com/philipsen/IthoRadio.git"
+    },
+    "frameworks": "arduino",
+    "platforms": "espressif8266"
+}
