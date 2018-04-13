@@ -5,7 +5,9 @@
     "authors":
     {
         "name": "Wim Philipsen",
-        "email": "itho@maak-t.com"
+        "email": "itho@maak-t.com",
+        "url": "https://github.com/philipsen/IthoRadio.git"
+
     },
     "repository":
     {
