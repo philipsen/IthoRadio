@@ -1,4 +1,6 @@
 
+#include <ArduinoOTA.h>
+
 void setupOta()
 {
   ArduinoOTA.onStart([]() {
