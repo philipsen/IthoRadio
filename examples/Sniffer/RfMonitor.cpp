@@ -1,10 +1,5 @@
 #include "RfMonitor.h"
-
-#include <SPI.h>
-#include <ESP8266WiFi.h>
-
 #include "IthoCC1101.h"
-
 #include "IthoDecode.h"
 #include "DemandIthoCommand.h"
 
@@ -14,8 +9,6 @@
 #define LARGE_DATA_LEN CC1101_BUFFER_LEN - 3
 uint8_t rfData[LARGE_BUFFER_LEN];
 volatile unsigned int rfDataWriteIdx = 0;
-
-IthoCC1101 cc1101;
 
 size_t interruptCount = 0;
 
@@ -44,7 +37,7 @@ String toString(uint8_t *data, unsigned int length, bool ashex = true)
 
 void ITHOinterrupt()
 {
-    size_t rb = cc1101.receiveDataRaw(rfData + rfDataWriteIdx, LARGE_BUFFER_LEN - rfDataWriteIdx);
+    size_t rb = IthoCC1101.receiveDataRaw(rfData + rfDataWriteIdx, LARGE_BUFFER_LEN - rfDataWriteIdx);
     rfDataWriteIdx += rb;
     interruptCount++;
 }
@@ -52,8 +45,8 @@ void ITHOinterrupt()
 void RfMonitor::setup()
 {
     Serial.println("setup begin");
-    cc1101.init();
-    cc1101.initReceive();
+    IthoCC1101.init();
+    IthoCC1101.initReceive();
     Serial.println("setup done");
     pinMode(ITHO_IRQ_PIN, INPUT);
     attachIter();
@@ -69,14 +62,12 @@ void RfMonitor::detachIter()
     detachInterrupt(ITHO_IRQ_PIN);
 }
 
-size_t oldSize = 0;
-int loopCount = 0;
-size_t checkIdx = 0;
+
 
 void RfMonitor::resetBuffer()
 {
     detachIter();
-    cc1101.resetToReadState();
+    IthoCC1101.resetToReadState();
     checkIdx = 0;
     oldSize = 0;
     rfDataWriteIdx = 0;
@@ -84,10 +75,6 @@ void RfMonitor::resetBuffer()
 }
 void RfMonitor::loop()
 {
-    loopCount++;
-    if (printDebug && loopCount % 10000000 == 0)
-        printf("ran loop %d times %d\n", loopCount, interruptCount);
-
     if (oldSize != rfDataWriteIdx)
     {
         // check startbyte
