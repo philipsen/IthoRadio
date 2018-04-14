@@ -4,30 +4,31 @@
  * gebaseerd op werk van Klusjesman, modified bij supersjimmie for Arduino/ESP8266
  */
 
-#ifndef __ITHOCC1101_H__
-#define __ITHOCC1101_H__
+#ifndef __ITHOCC1101Class_H__
+#define __ITHOCC1101Class_H__
 
 #include <stdio.h>
 #include "CC1101.h"
 
-class IthoCC1101 : public CC1101
+class IthoCC1101Class : public CC1101
 {
 	private:														
 		
-	//functions
 	public:
-		IthoCC1101();		//set initial counter value
-		~IthoCC1101();
+		IthoCC1101Class();
+		~IthoCC1101Class();
 		
-		//init
-		void init() { CC1101::init(); }											//init,reset CC1101
+		void init() { CC1101::init(); }
 		void initReceive();
 
 		void sendCommand(CC1101Packet outMessage);
 		void initReceiveMessage();
 
 	private:
-		void initSendMessage2(uint8_t pktLength);
+		void initSendMessage(uint8_t pktLength);
 		void finishTransfer();
 }; 
-#endif //__ITHOCC1101_H__
+
+extern IthoCC1101Class IthoCC1101;
+
+#endif //__ITHOCC1101Class_H__

@@ -11,8 +11,6 @@
 uint8_t rfData[LARGE_BUFFER_LEN];
 volatile unsigned int rfDataWriteIdx = 0;
 
-IthoCC1101 cc1101;
-
 size_t interruptCount = 0;
 
 String RfRemoteClass::toString(uint8_t *data, unsigned int length, bool ashex)
@@ -40,7 +38,7 @@ String RfRemoteClass::toString(uint8_t *data, unsigned int length, bool ashex)
 
 void ITHOinterrupt()
 {
-    size_t rb = cc1101.receiveDataRaw(rfData + rfDataWriteIdx, LARGE_BUFFER_LEN - rfDataWriteIdx);
+    size_t rb = IthoCC1101.receiveDataRaw(rfData + rfDataWriteIdx, LARGE_BUFFER_LEN - rfDataWriteIdx);
     rfDataWriteIdx += rb;
     interruptCount++;
 }
@@ -48,8 +46,8 @@ void ITHOinterrupt()
 void RfRemoteClass::setup()
 {
     Serial.println("setup begin");
-    cc1101.init();
-    cc1101.initReceive();
+    IthoCC1101.init();
+    IthoCC1101.initReceive();
     Serial.println("setup done");
     pinMode(ITHO_IRQ_PIN, INPUT);
     attachIter();
@@ -72,7 +70,7 @@ size_t checkIdx = 0;
 void RfRemoteClass::resetBuffer()
 {
     detachIter();
-    cc1101.resetToReadState();
+    IthoCC1101.resetToReadState();
     checkIdx = 0;
     oldSize = 0;
     rfDataWriteIdx = 0;
@@ -220,7 +218,7 @@ void RfRemoteClass::sendCommand(const String &c)
 
     CC1101Packet p;
     convertToPacket(cmdEncoded, p);
-    cc1101.sendCommand(p);
+    IthoCC1101.sendCommand(p);
 
     _counter++;
 }
