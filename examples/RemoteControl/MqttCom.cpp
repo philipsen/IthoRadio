@@ -6,38 +6,30 @@
 
 WiFiClient espClient;
 
-MqttCom *_globalMqtt = 0;
-
 //print any message received for subscribed topic
 void callback(char *topic, byte *payload, unsigned int length)
 {
     payload[length] = 0;
     printf("mqtt msg arrived: %s(%d) -> %s\n", topic, length, payload);
-    // int delaytime = 500;
-    // uint8_t maxTries = 3;
 
     // todo: check incoming topic
-    if (_globalMqtt != 0 && _globalMqtt->incomingTopic == topic)
-    {
-        String c = String((char *)payload);
-        RfRemote::_globalRf->sendCommand(c);
-    }
+    String c = String((char *)payload);
+    RfRemote.sendCommand(c);
 }
 
-MqttCom::MqttCom(const String &t) : incomingTopic(t)
+MqttComClass::MqttComClass(const String &t) : incomingTopic(t)
 {
     _client = new PubSubClient(espClient);
-    _globalMqtt = this;
 }
 
-void MqttCom::setup()
+void MqttComClass::setup()
 {
     //connect to MQTT server
     _client->setServer("pi3.lan", 1883);
     _client->setCallback(callback);
 }
 
-void MqttCom::loop()
+void MqttComClass::loop()
 {
     // put your main code here, to run repeatedly:
     if (!_client->connected())
@@ -47,12 +39,12 @@ void MqttCom::loop()
     _client->loop();
 }
 
-void MqttCom::publish(const char *c, const char *m)
+void MqttComClass::publish(const char *c, const char *m)
 {
     _client->publish(c, m);
 }
 
-void MqttCom::_reconnect()
+void MqttComClass::_reconnect()
 {
     // Loop until we're reconnected
     while (!_client->connected())
@@ -83,3 +75,5 @@ void MqttCom::_reconnect()
         //printf("connected = %d\n", _client->connected());
     }
 }
+
+MqttComClass MqttCom("ithoin");

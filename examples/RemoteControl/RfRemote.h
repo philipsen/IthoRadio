@@ -4,10 +4,10 @@ class MqttCom;
 class ByteArray;
 class CC1101Packet;
 
-class RfRemote
+class RfRemoteClass
 {
   public:
-    RfRemote() { _globalRf = this; }
+    RfRemoteClass() { }
 
     void setup();
     void loop();
@@ -25,7 +25,7 @@ class RfRemote
     void turnOff();
     void sendCommand(const String &c);
 
-    static RfRemote *_globalRf;
+    static String toString(uint8_t *data, unsigned int length, bool ashex = true);
 
   private:
     bool _gotIthoStart;
@@ -33,3 +33,5 @@ class RfRemote
 
     uint8_t _counter = 78;
 };
+
+extern RfRemoteClass RfRemote;

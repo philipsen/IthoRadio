@@ -47,26 +47,26 @@ void receiveIRCommand()
         {
         case IRCMD_VENT_1:
             ventilation = 1;
-            rfmon.turnOn();
+            RfRemote.turnOn();
             break;
 
         case IRCMD_VENT_2:
             ventilation = 2;
-            rfmon.turnOn();
+            RfRemote.turnOn();
             break;
 
         case IRCMD_VENT_3:
             ventilation = 3;
-            rfmon.turnOn();
+            RfRemote.turnOn();
             break;
 
         case IRCMD_VENT_4:
             ventilation = 4;
-            rfmon.turnOn();
+            RfRemote.turnOn();
             break;
 
         case IRCMD_VENT_OFF:
-            rfmon.turnOff();
+            RfRemote.turnOff();
             ventilation = 0;
             break;
         default:

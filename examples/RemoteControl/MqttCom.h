@@ -2,10 +2,10 @@
 
 class PubSubClient;
 
-class MqttCom
+class MqttComClass
 {
 public:
-  MqttCom(const String& t);
+  MqttComClass(const String& t);
   void setup();
   void loop();
   void publish(const char *c, const char *m);
@@ -16,3 +16,4 @@ private:
   void _reconnect();
 };
 
+extern MqttComClass MqttCom;

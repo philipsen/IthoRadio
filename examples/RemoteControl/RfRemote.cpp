@@ -1,15 +1,11 @@
 #include "RfRemote.h"
-
 #include <SPI.h>
 #include <ESP8266WiFi.h>
-
 #include "IthoCC1101.h"
-
 #include "IthoDecode.h"
 #include "DemandIthoCommand.h"
 
 #define ITHO_IRQ_PIN D2
-
 #define LARGE_BUFFER_LEN 2052
 #define LARGE_DATA_LEN CC1101_BUFFER_LEN - 3
 uint8_t rfData[LARGE_BUFFER_LEN];
@@ -19,7 +15,7 @@ IthoCC1101 cc1101;
 
 size_t interruptCount = 0;
 
-String toString(uint8_t *data, unsigned int length, bool ashex = true)
+String RfRemoteClass::toString(uint8_t *data, unsigned int length, bool ashex)
 {
     String str = "";
     for (uint8_t i = 0; i < length; i++)
@@ -49,7 +45,7 @@ void ITHOinterrupt()
     interruptCount++;
 }
 
-void RfRemote::setup()
+void RfRemoteClass::setup()
 {
     Serial.println("setup begin");
     cc1101.init();
@@ -59,12 +55,12 @@ void RfRemote::setup()
     attachIter();
 }
 
-void RfRemote::attachIter()
+void RfRemoteClass::attachIter()
 {
     attachInterrupt(ITHO_IRQ_PIN, ITHOinterrupt, RISING);
 }
 
-void RfRemote::detachIter()
+void RfRemoteClass::detachIter()
 {
     detachInterrupt(ITHO_IRQ_PIN);
 }
@@ -73,7 +69,7 @@ size_t oldSize = 0;
 int loopCount = 0;
 size_t checkIdx = 0;
 
-void RfRemote::resetBuffer()
+void RfRemoteClass::resetBuffer()
 {
     detachIter();
     cc1101.resetToReadState();
@@ -82,7 +78,7 @@ void RfRemote::resetBuffer()
     rfDataWriteIdx = 0;
     attachIter();
 }
-void RfRemote::loop()
+void RfRemoteClass::loop()
 {
     loopCount++;
     if (printDebug && loopCount % 10000000 == 0)
@@ -179,16 +175,16 @@ uint8_t timer3Bytes[] =  {0x22, 0xf3, 0x05, 0x00, 0x42, 0x09, 0x03, 0x03};
 uint8_t joinBytes[] =    {0x1f, 0xc9, 0x0c, 0x00, 0x22, 0xf8, 0x52, 0x50, 0xb9, 0x00, 0x10, 0xe0, 0x52, 0x50, 0xb9};
 
 
-void RfRemote::turnOn()
+void RfRemoteClass::turnOn()
 {
     sendCommand("cook1");
 }
-void RfRemote::turnOff()
+void RfRemoteClass::turnOff()
 {
     sendCommand("eco");
 }
 
-void RfRemote::sendCommand(const String &c)
+void RfRemoteClass::sendCommand(const String &c)
 {
     Serial.print("send command: ");
     Serial.println(c);
@@ -229,7 +225,7 @@ void RfRemote::sendCommand(const String &c)
     _counter++;
 }
 
-void RfRemote::convertToPacket(const ByteArray &a, CC1101Packet &p)
+void RfRemoteClass::convertToPacket(const ByteArray &a, CC1101Packet &p)
 {
     for (size_t i = 0; i < 7; i++)
         p.data[i] = 170;
@@ -242,4 +238,4 @@ void RfRemote::convertToPacket(const ByteArray &a, CC1101Packet &p)
     }
 }
 
-RfRemote* RfRemote::_globalRf = 0;
+RfRemoteClass RfRemote;
