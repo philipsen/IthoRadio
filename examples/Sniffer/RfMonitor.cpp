@@ -138,9 +138,11 @@ void RfMonitor::loop()
                     //printf("crc val = %d\n", crc);
                     if (s.charAt(0) == 0x16)
                     {
-                        Serial.printf("got remote command (crc=%d): ", crc);
+                        Serial.printf("remote: ");
                         String dc = IthoDecode::decode(rfData, i);
-                        Serial.println(IthoDecode::toPrintString(dc));
+                        //Serial.println(IthoDecode::toPrintString(dc));
+                        DemandIthoCommand cmd(s);
+                        Serial.println(cmd.toString());
                     }
                     else
                     {

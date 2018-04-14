@@ -11,9 +11,9 @@ class DemandIthoCommand
 
         DemandIthoCommand(const String& s) {
             //printf("DemandIthoCommand ctor\n");
-            _id.substring(s, 0, 3);
-            _counter.substring(s, 3, 4);
-            _command.substring(s, 4, s.length()-1);
+            _id.substring(s, 0, 4);
+            _counter.substring(s, 4, 5);
+            _command.substring(s, 5, s.length()-1);
             _crc.substring(s, s.length()-1, s.length());
         }
 
