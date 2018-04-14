@@ -1,4 +1,4 @@
-#include "RfRemote.h"
+#include "IthoReceive.h"
 #include <SPI.h>
 #include <ESP8266WiFi.h>
 #include "IthoCC1101.h"
@@ -11,9 +11,7 @@
 uint8_t rfData[LARGE_BUFFER_LEN];
 volatile unsigned int rfDataWriteIdx = 0;
 
-size_t interruptCount = 0;
-
-String RfRemoteClass::toString(uint8_t *data, unsigned int length, bool ashex)
+String IthoReceiveClass::toString(uint8_t *data, unsigned int length, bool ashex)
 {
     String str = "";
     for (uint8_t i = 0; i < length; i++)
@@ -40,44 +38,39 @@ void ITHOinterrupt()
 {
     size_t rb = IthoCC1101.receiveDataRaw(rfData + rfDataWriteIdx, LARGE_BUFFER_LEN - rfDataWriteIdx);
     rfDataWriteIdx += rb;
-    interruptCount++;
 }
 
-void RfRemoteClass::setup()
+void IthoReceiveClass::setup()
 {
-    Serial.println("setup begin");
-    IthoCC1101.init();
-    IthoCC1101.initReceive();
-    Serial.println("setup done");
     pinMode(ITHO_IRQ_PIN, INPUT);
     attachIter();
 }
 
-void RfRemoteClass::attachIter()
+void IthoReceiveClass::attachIter()
 {
     attachInterrupt(ITHO_IRQ_PIN, ITHOinterrupt, RISING);
 }
 
-void RfRemoteClass::detachIter()
+void IthoReceiveClass::detachIter()
 {
     detachInterrupt(ITHO_IRQ_PIN);
 }
 
-void RfRemoteClass::resetBuffer()
+void IthoReceiveClass::resetBuffer()
 {
     detachIter();
     IthoCC1101.resetToReadState();
-    checkIdx = 0;
-    oldSize = 0;
+    _checkIdx = 0;
+    _oldSize = 0;
     rfDataWriteIdx = 0;
     attachIter();
 }
-void RfRemoteClass::loop()
+void IthoReceiveClass::loop()
 {
-    if (oldSize != rfDataWriteIdx)
+    if (_oldSize != rfDataWriteIdx)
     {
         // check startbyte
-        if (oldSize == 0 && rfData[0] != 0xfe)
+        if (_oldSize == 0 && rfData[0] != 0xfe)
         {
             //printf("loop: drop packet b=%2x\n", rfData[0]);
             //Serial.println(toString(rfData, rfDataWriteIdx, true));
@@ -96,9 +89,9 @@ void RfRemoteClass::loop()
         uint8_t preAmble[] = {0xfe, 0x00, 0xb3, 0x2a, 0xab, 0x2a};  
 
         //printf("loop check for end seq at %d %d\n", checkIdx+1, rfDataWriteIdx);
-        for (; checkIdx+2 < rfDataWriteIdx; checkIdx++)
+        for (; _checkIdx+2 < rfDataWriteIdx; _checkIdx++)
         {
-            size_t i = checkIdx;
+            size_t i = _checkIdx;
             if ((rfData[i] == 0xac || rfData[i] == 0xca) &&
                 rfData[i + 1] == 0xaa && rfData[i + 2] == 0xaa)
             {
@@ -143,20 +136,8 @@ void RfRemoteClass::loop()
                 return;
             }
         }
-        oldSize = rfDataWriteIdx;
+        _oldSize = rfDataWriteIdx;
     }
 }
 
-
-void RfRemoteClass::turnOn()
-{
-    IthoCC1101.sendCommand("cook1");
-}
-void RfRemoteClass::turnOff()
-{
-    IthoCC1101.sendCommand("eco");
-}
-
-
-
-RfRemoteClass RfRemote;
+IthoReceiveClass IthoReceive;

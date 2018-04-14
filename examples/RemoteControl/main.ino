@@ -2,7 +2,7 @@
 #include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
 #include <assert.h>
-#include "RfRemote.h"
+#include <IthoReceive.h>
 #include "Ir.h"
 #include "MqttCom.h"
 #include "Ota.h"
@@ -21,7 +21,7 @@ void setup()
     MqttCom.setup();
 
     pinMode(2, OUTPUT);
-    RfRemote.setup();
+    IthoReceive.setup();
 
     setupIr();
 }
@@ -29,7 +29,7 @@ void setup()
 void loop()
 {
     ArduinoOTA.handle();
-    RfRemote.loop();
+    IthoReceive.loop();
     MqttCom.loop();
     loopIr();
 }

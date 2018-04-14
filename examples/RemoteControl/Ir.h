@@ -1,6 +1,7 @@
 #include <IRremoteESP8266.h>
 #include <IRrecv.h>
 #include <IRutils.h>
+#include <IthoSender.h>
 
 void receiveIRCommand();
 
@@ -47,26 +48,26 @@ void receiveIRCommand()
         {
         case IRCMD_VENT_1:
             ventilation = 1;
-            RfRemote.turnOn();
+            IthoSender::turnOn();
             break;
 
         case IRCMD_VENT_2:
             ventilation = 2;
-            RfRemote.turnOn();
+            IthoSender::turnOn();
             break;
 
         case IRCMD_VENT_3:
             ventilation = 3;
-            RfRemote.turnOn();
+            IthoSender::turnOn();
             break;
 
         case IRCMD_VENT_4:
             ventilation = 4;
-            RfRemote.turnOn();
+            IthoSender::turnOn();
             break;
 
         case IRCMD_VENT_OFF:
-            RfRemote.turnOff();
+            IthoSender::turnOff();
             ventilation = 0;
             break;
         default:
@@ -74,17 +75,7 @@ void receiveIRCommand()
             break;
         }
         printf("vent = %d\n", ventilation);
-
-        // if (ventilation != 199)
-        // {
-        //     //mqtt.publish("hubirremote", String(ventilation).c_str());
-        // }
-        // transmit received message
-        //send(hoodMessage.set(ventilation));
-        //String s = String(results.value, HEX).c_str();
-        //Serial.println("here");
-        //Serial.println(s); // display it on serial monitor in hexadecimal
-        //send(irMessage.set(s.c_str()));
+        
         irrecv.resume(); // receive the next value
     }
 }
