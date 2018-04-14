@@ -2,41 +2,34 @@
 #include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
 #include <assert.h>
-
-#include "RfMonitor.h"
-
-//#include "MqttCom.h"
-//#include "Network.h"
+#include "RfRemote.h"
+#include "Ir.h"
+#include "MqttCom.h"
 #include "Ota.h"
-
-RfMonitor rfmon;
-
-//WiFiClient espClient;
-
-//MqttCom mqtt("ithomon");
 
 void setupWifi();
 
-void callback(char*, byte*, unsigned int )
-{
-  Serial.println("mqtt callback");
-}
-
 void setup()
 {
-  Serial.begin(115200);
-  Serial.println("\nBooting");
+    Serial.begin(115200);
+    Serial.println("\nBooting");
 
-  setupWifi();
-  setupOta();
-  pinMode(2, OUTPUT);
-  rfmon.setup();
+    setupWifi();
+    setupOta();
+
+    MqttCom.incomingTopic = "ithotest";
+    MqttCom.setup();
+
+    pinMode(2, OUTPUT);
+    RfRemote.setup();
+
+    setupIr();
 }
 
 void loop()
 {
-  ArduinoOTA.handle();
-  rfmon.loop();
+    ArduinoOTA.handle();
+    RfRemote.loop();
+    MqttCom.loop();
+    loopIr();
 }
-
-

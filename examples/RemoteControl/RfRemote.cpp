@@ -1,15 +1,11 @@
-#include "RfMonitor.h"
-
+#include "RfRemote.h"
 #include <SPI.h>
 #include <ESP8266WiFi.h>
-
 #include "IthoCC1101.h"
-
 #include "IthoDecode.h"
 #include "DemandIthoCommand.h"
 
 #define ITHO_IRQ_PIN D2
-
 #define LARGE_BUFFER_LEN 2052
 #define LARGE_DATA_LEN CC1101_BUFFER_LEN - 3
 uint8_t rfData[LARGE_BUFFER_LEN];
@@ -19,7 +15,7 @@ IthoCC1101 cc1101;
 
 size_t interruptCount = 0;
 
-String toString(uint8_t *data, unsigned int length, bool ashex = true)
+String RfRemoteClass::toString(uint8_t *data, unsigned int length, bool ashex)
 {
     String str = "";
     for (uint8_t i = 0; i < length; i++)
@@ -49,7 +45,7 @@ void ITHOinterrupt()
     interruptCount++;
 }
 
-void RfMonitor::setup()
+void RfRemoteClass::setup()
 {
     Serial.println("setup begin");
     cc1101.init();
@@ -59,12 +55,12 @@ void RfMonitor::setup()
     attachIter();
 }
 
-void RfMonitor::attachIter()
+void RfRemoteClass::attachIter()
 {
     attachInterrupt(ITHO_IRQ_PIN, ITHOinterrupt, RISING);
 }
 
-void RfMonitor::detachIter()
+void RfRemoteClass::detachIter()
 {
     detachInterrupt(ITHO_IRQ_PIN);
 }
@@ -73,7 +69,7 @@ size_t oldSize = 0;
 int loopCount = 0;
 size_t checkIdx = 0;
 
-void RfMonitor::resetBuffer()
+void RfRemoteClass::resetBuffer()
 {
     detachIter();
     cc1101.resetToReadState();
@@ -82,7 +78,7 @@ void RfMonitor::resetBuffer()
     rfDataWriteIdx = 0;
     attachIter();
 }
-void RfMonitor::loop()
+void RfRemoteClass::loop()
 {
     loopCount++;
     if (printDebug && loopCount % 10000000 == 0)
@@ -167,3 +163,79 @@ void RfMonitor::loop()
         oldSize = rfDataWriteIdx;
     }
 }
+
+
+uint8_t ecoBytes[] =     {0x22, 0xf8, 0x03, 0x00, 0x01, 0x02};
+uint8_t comfortBytes[] = {0x22, 0xf8, 0x03, 0x00, 0x02, 0x02};
+uint8_t cook1Bytes[] =   {0x22, 0xf3, 0x05, 0x00, 0x02, 0x1e, 0x02, 0x03};
+uint8_t cook2Bytes[] =   {0x22, 0xf3, 0x05, 0x00, 0x02, 0x3c, 0x02, 0x03};
+uint8_t timer1Bytes[] =  {0x22, 0xf3, 0x05, 0x00, 0x42, 0x03, 0x03, 0x03};
+uint8_t timer2Bytes[] =  {0x22, 0xf3, 0x05, 0x00, 0x42, 0x06, 0x03, 0x03};
+uint8_t timer3Bytes[] =  {0x22, 0xf3, 0x05, 0x00, 0x42, 0x09, 0x03, 0x03};
+uint8_t joinBytes[] =    {0x1f, 0xc9, 0x0c, 0x00, 0x22, 0xf8, 0x52, 0x50, 0xb9, 0x00, 0x10, 0xe0, 0x52, 0x50, 0xb9};
+
+
+void RfRemoteClass::turnOn()
+{
+    sendCommand("cook1");
+}
+void RfRemoteClass::turnOff()
+{
+    sendCommand("eco");
+}
+
+void RfRemoteClass::sendCommand(const String &c)
+{
+    Serial.print("send command: ");
+    Serial.println(c);
+
+    uint8_t idBytes[] = {0x52, 0x50, 0xb9};
+
+    uint8_t* comBytes = 0;
+    unsigned int comLength = 0;
+    if (c == "eco")
+    {
+        digitalWrite(D0, 1);
+        comBytes = ecoBytes;
+        comLength = 6;
+    }
+    if (c == "cook1")
+    {
+        digitalWrite(D0, 0);
+        comBytes = cook1Bytes;
+        comLength = 8;
+    }
+
+    ByteArray id(idBytes, 3);
+    ByteArray cc(comBytes, comLength);
+    DemandIthoCommand cmd(id, _counter, cc);
+    String ps = cmd.toString();
+    Serial.print("send cmd: ");
+    Serial.println(ps);
+
+    ByteArray cmdEncoded = IthoDecode::encode(cmd);
+
+    Serial.print("send encoded: ");
+    Serial.println(cmdEncoded.toString());
+
+    CC1101Packet p;
+    convertToPacket(cmdEncoded, p);
+    cc1101.sendCommand(p);
+
+    _counter++;
+}
+
+void RfRemoteClass::convertToPacket(const ByteArray &a, CC1101Packet &p)
+{
+    for (size_t i = 0; i < 7; i++)
+        p.data[i] = 170;
+    p.data[7] = 171;
+
+    p.length = a.length() + 8;
+    for (size_t i = 0; i < p.length; i++)
+    {
+        p.data[8 + i] = a.data(i);
+    }
+}
+
+RfRemoteClass RfRemote;
