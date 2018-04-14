@@ -7,11 +7,10 @@ class CC1101Packet;
 class RfRemoteClass
 {
   public:
-    RfRemoteClass() { }
+    RfRemoteClass() {}
 
     void setup();
     void loop();
-    void convertToPacket(const ByteArray &, CC1101Packet &);
 
     void attachIter();
     void detachIter();
@@ -23,15 +22,16 @@ class RfRemoteClass
 
     void turnOn();
     void turnOff();
-    void sendCommand(const String &c);
 
+    //void convertToPacket(const ByteArray &, CC1101Packet &);
     static String toString(uint8_t *data, unsigned int length, bool ashex = true);
 
   private:
     bool _gotIthoStart;
     uint8_t _lastIndex;
 
-    uint8_t _counter = 78;
+    size_t oldSize = 0;
+    size_t checkIdx = 0;
 };
 
 extern RfRemoteClass RfRemote;
