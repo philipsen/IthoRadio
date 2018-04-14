@@ -63,7 +63,6 @@ void RfMonitor::detachIter()
 }
 
 
-
 void RfMonitor::resetBuffer()
 {
     detachIter();
