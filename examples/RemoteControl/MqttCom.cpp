@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "RfRemote.h"
+#include "IthoCC1101.h"
 #include "MqttCom.h"
 #include "ESP8266WiFi.h"
 #include <PubSubClient.h>
@@ -14,7 +14,7 @@ void callback(char *topic, byte *payload, unsigned int length)
 
     // todo: check incoming topic
     String c = String((char *)payload);
-    RfRemote.sendCommand(c);
+    IthoCC1101.sendCommand(c);
 }
 
 MqttComClass::MqttComClass(const String &t) : incomingTopic(t)
