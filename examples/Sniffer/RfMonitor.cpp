@@ -85,7 +85,7 @@ void RfMonitor::resetBuffer()
 void RfMonitor::loop()
 {
     loopCount++;
-    if (loopCount % 10000000 == 0)
+    if (printDebug && loopCount % 10000000 == 0)
         printf("ran loop %d times %d\n", loopCount, interruptCount);
 
     if (oldSize != rfDataWriteIdx)
@@ -101,7 +101,7 @@ void RfMonitor::loop()
 
         if (rfDataWriteIdx > 1500)
         {
-            printf("loop: drop packet length %d\n", rfDataWriteIdx);
+            if (printDebug) printf("loop: drop packet length %d\n", rfDataWriteIdx);
             rfDataWriteIdx = 0;
             //Serial.println(toString(rfData, rfDataWriteIdx, true));
             resetBuffer();
@@ -116,10 +116,11 @@ void RfMonitor::loop()
             if ((rfData[i] == 0xac || rfData[i] == 0xca) &&
                 rfData[i + 1] == 0xaa && rfData[i + 2] == 0xaa)
             {
-                //printf("loop: rfDataWriteIdx %d -> %d\n", oldSize, rfDataWriteIdx);
-                //printf("loop: detect end seq at %d\n", i);
-                Serial.println("");
-                Serial.println(toString(rfData, i+3, true));
+                if (printAllPacket) 
+                {
+                    //Serial.println("");
+                    Serial.println(toString(rfData, i+3, true));
+                }
                 bool isIthoRemote = true;
                 for (size_t i = 0; i < 6; i++)
                 {
@@ -128,23 +129,25 @@ void RfMonitor::loop()
                         break;
                     }
                 }
-                printf("preamble check = %d\n", isIthoRemote);
+                //printf("preamble check = %d\n", isIthoRemote);
                 if (isIthoRemote)
                 {
                     String s = IthoDecode::decode2(rfData, i);
                     uint8_t crc = IthoDecode::crc(s);
                     //Serial.println(crc);
-                    printf("crc val = %d\n", crc);
+                    //printf("crc val = %d\n", crc);
                     if (s.charAt(0) == 0x16)
                     {
-                        Serial.println("got remote command");
-                        //String dc = IthoDecode::decode(rfData, i+3);
-                        //Serial.println(dc);
+                        Serial.printf("got remote command (crc=%d): ", crc);
+                        String dc = IthoDecode::decode(rfData, i);
+                        Serial.println(IthoDecode::toPrintString(dc));
                     }
                     else
                     {
-                        Serial.println("got other packet");
+                        if (printNonRemote) {
+                        Serial.printf("other (crc=%d): ", crc);
                         Serial.println(IthoDecode::toPrintString(s));
+                        }
                     }
                 }
                 

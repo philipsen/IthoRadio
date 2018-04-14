@@ -66,10 +66,10 @@ String IthoDecode::decode(uint8_t *data, uint8_t length)
     //Serial.println(b.toString());
 
     // first 4 and drop odd bits
-        printf("here2\n");
+    //printf("here2\n");
 
     BitArray b2((l2 - 4) / 2);
-    for (unsigned int i = 0; i < l2 / 2; i++)
+    for (unsigned int i = 0; i < (l2 / 2)-2; i++)
     {
         b2.set(i, b.get(4 + (i * 2)));
     }
@@ -79,7 +79,7 @@ String IthoDecode::decode(uint8_t *data, uint8_t length)
     // div into group of 5, drop last bit and reverse
     unsigned int nf = (b2.length() / 5);
     unsigned int fl = nf * 4;
-    printf("here3\n");
+    //printf("here3\n");
     BitArray b3(fl);
     for (unsigned int i = 0; i < nf; i++)
     {
@@ -88,13 +88,13 @@ String IthoDecode::decode(uint8_t *data, uint8_t length)
             b3.set(i * 4 + j, b2.get(i * 5 + (3 - j)));
         }
     }
-    //printf("After octet coding:\n");
-    //Serial.println(b3.toString());
-    //Serial.println(b3.toString3());
+    // printf("After octet coding:\n");
+    // Serial.println(b3.toString());
+    // Serial.println(b3.toString3());
 
-    uint8_t l = b3.search(0x7f, 0xff);
-    //Serial.println(b3.toString3());
-    //printf("crc = %d\n", b3.checksum());
+    unsigned int l = b3.search(0x7f, 0xff);
+    // Serial.println(b3.toString3());
+    // printf("crc = %d\n", b3.checksum());
 
     String rs = b3.toStringRaw();
     //String ps = toPrintString(rs);

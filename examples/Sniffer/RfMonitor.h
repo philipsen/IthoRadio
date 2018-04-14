@@ -15,6 +15,10 @@ class RfMonitor
     void detachIter();
     void resetBuffer();
     
+    bool printAllPacket = false;
+    bool printNonRemote = false;
+    bool printDebug = false;
+
   private:
     bool _gotIthoStart;
     uint8_t _lastIndex;
