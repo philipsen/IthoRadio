@@ -1,8 +1,17 @@
-#include <IthoCC1101.h>
+#include "IthoCC1101.h"
 
-class IthoSender
+class IthoSenderClass
 {
-    public:
-        static void turnOff() { IthoCC1101.sendCommand("eco"); }
-        static void turnOn() { IthoCC1101.sendCommand("cook1"); }
+  public:
+    void turnOff() { sendCommand("eco"); }
+    void turnOn() { sendCommand("cook1"); }
+
+    void sendCommand(const String &c);
+
+  private:
+    static void _convertToPacket(const ByteArray &, CC1101Packet &);
+
+    uint8_t _counter = 87;
 };
+
+extern IthoSenderClass IthoSender;

@@ -12,8 +12,8 @@ class IthoReceiveClass
 	void detachIter();
 	void resetBuffer();
 
-	bool printAllPacket = false;
-	bool printNonRemote = false;
+	bool printAllPacket = true;
+	bool printNonRemote = true;
 	bool printDebug = false;
 
   private:
