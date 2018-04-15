@@ -3,7 +3,7 @@
 #include <ESP8266WiFi.h>
 #include "IthoCC1101.h"
 #include "IthoDecode.h"
-#include "DemandIthoCommand.h"
+#include "IthoCommand.h"
 
 #define ITHO_IRQ_PIN D2
 #define LARGE_BUFFER_LEN 2052
@@ -120,7 +120,7 @@ void IthoReceiveClass::loop()
                         Serial.printf("remote: ");
                         String dc = IthoDecode::decode(rfData, i);
                         //Serial.println(IthoDecode::toPrintString(dc));
-                        DemandIthoCommand cmd(s);
+                        IthoCommand cmd(s);
                         Serial.println(cmd.toString());
                     }
                     else

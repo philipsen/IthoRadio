@@ -1,5 +1,5 @@
 #include "IthoDecode.h"
-#include "DemandIthoCommand.h"
+#include "IthoCommand.h"
 
 #define DEBUG 0
 
@@ -155,7 +155,7 @@ String IthoDecode::decode2(uint8_t *data, uint8_t length)
     return rs;
 }
 
-ByteArray IthoDecode::encode(DemandIthoCommand &cmd)
+ByteArray IthoDecode::encode(IthoCommand &cmd)
 {
     unsigned int cmdLength = cmd.id().length() + 1 + cmd.command().length() + 1;
     Serial.printf("IthoDecode::encode cmd=%s  l=%d\n", cmd.toString().c_str(), cmdLength);

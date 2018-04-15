@@ -1,16 +1,16 @@
-#ifndef __DemandIthoCommand__
-#define __DemandIthoCommand__
+#ifndef __IthoCommand__
+#define __IthoCommand__
 
 #include <Arduino.h>
 #include "ByteArray.h"
 
-class DemandIthoCommand
+class IthoCommand
 {
     public:
-        DemandIthoCommand(ByteArray id, uint8_t counter, ByteArray command);
+        IthoCommand(ByteArray id, uint8_t counter, ByteArray command);
 
-        DemandIthoCommand(const String& s) {
-            //printf("DemandIthoCommand ctor\n");
+        IthoCommand(const String& s) {
+            //printf("IthoCommand ctor\n");
             _id.substring(s, 0, 4);
             _counter.substring(s, 4, 5);
             _command.substring(s, 5, s.length()-1);

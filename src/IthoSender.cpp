@@ -2,7 +2,7 @@
 
 #include "ByteArray.h"
 
-#include "DemandIthoCommand.h"
+#include "IthoCommand.h"
 #include "IthoDecode.h"
 
 uint8_t ecoBytes[] =     {0x22, 0xf8, 0x03, 0x00, 0x01, 0x02};
@@ -14,13 +14,19 @@ uint8_t timer2Bytes[] =  {0x22, 0xf3, 0x05, 0x00, 0x42, 0x06, 0x03, 0x03};
 uint8_t timer3Bytes[] =  {0x22, 0xf3, 0x05, 0x00, 0x42, 0x09, 0x03, 0x03};
 uint8_t joinBytes[] =    {0x1f, 0xc9, 0x0c, 0x00, 0x22, 0xf8, 0x52, 0x50, 0xb9, 0x00, 0x10, 0xe0, 0x52, 0x50, 0xb9};
 
+void IthoSenderClass::remoteId(uint8_t* id)
+{
+    for (size_t i = 0; i < 3; i++)
+    {
+        _remoteId[i] = id[i];
+    }
+}
+
 
 void IthoSenderClass::sendCommand(const String &c)
 {
     Serial.print("send command: ");
     Serial.println(c);
-
-    uint8_t idBytes[] = {0x52, 0x50, 0xb9};
 
     uint8_t* comBytes = 0;
     unsigned int comLength = 0;
@@ -37,9 +43,9 @@ void IthoSenderClass::sendCommand(const String &c)
         comLength = 8;
     }
 
-    ByteArray id(idBytes, 3);
+    ByteArray id(_remoteId, 3);
     ByteArray cc(comBytes, comLength);
-    DemandIthoCommand cmd(id, _counter, cc);
+    IthoCommand cmd(id, _counter, cc);
     String ps = cmd.toString();
     Serial.print("send cmd: ");
     Serial.println(ps);
@@ -52,7 +58,6 @@ void IthoSenderClass::sendCommand(const String &c)
     CC1101Packet p;
     _convertToPacket(cmdEncoded, p);
     IthoCC1101.sendCommand(p);
-
     _counter++;
 }
 
