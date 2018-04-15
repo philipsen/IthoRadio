@@ -9,7 +9,6 @@ class IthoDecode
     static ByteArray encode(IthoCommand& cmd);
 
     static String decode(uint8_t *data, uint8_t length);
-    static String decode2(uint8_t *data, uint8_t length);
 
     static uint8_t crc(const String& rawByteString);
     static String toPrintString(const String& s);

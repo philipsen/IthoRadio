@@ -111,14 +111,12 @@ void IthoReceiveClass::loop()
                 //printf("preamble check = %d\n", isIthoRemote);
                 if (isIthoRemote)
                 {
-                    String s = IthoDecode::decode2(rfData, i);
+                    String s = IthoDecode::decode(rfData, i);
                     uint8_t crc = IthoDecode::crc(s);
-                    //Serial.println(crc);
-                    //printf("crc val = %d\n", crc);
                     if (s.charAt(0) == 0x16)
                     {
                         Serial.printf("remote: ");
-                        String dc = IthoDecode::decode(rfData, i);
+                        //String dc = IthoDecode::decode(rfData, i);
                         //Serial.println(IthoDecode::toPrintString(dc));
                         IthoCommand cmd(s);
                         Serial.println(cmd.toString());
