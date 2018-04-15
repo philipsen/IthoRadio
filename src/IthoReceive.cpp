@@ -11,6 +11,12 @@
 uint8_t rfData[LARGE_BUFFER_LEN];
 volatile unsigned int rfDataWriteIdx = 0;
 
+void IthoReceiveClass::setInterruptPin(uint8_t pin)
+{
+    _irqPin = pin;
+    pinMode(_irqPin, OUTPUT);
+}
+
 String IthoReceiveClass::toString(uint8_t *data, unsigned int length, bool ashex)
 {
     String str = "";
@@ -80,30 +86,32 @@ void IthoReceiveClass::loop()
 
         if (rfDataWriteIdx > 1500)
         {
-            if (printDebug) printf("loop: drop packet length %d\n", rfDataWriteIdx);
+            if (printDebug)
+                printf("loop: drop packet length %d\n", rfDataWriteIdx);
             rfDataWriteIdx = 0;
             //Serial.println(toString(rfData, rfDataWriteIdx, true));
             resetBuffer();
             return;
         }
-        uint8_t preAmble[] = {0xfe, 0x00, 0xb3, 0x2a, 0xab, 0x2a};  
+        uint8_t preAmble[] = {0xfe, 0x00, 0xb3, 0x2a, 0xab, 0x2a};
 
         //printf("loop check for end seq at %d %d\n", checkIdx+1, rfDataWriteIdx);
-        for (; _checkIdx+2 < rfDataWriteIdx; _checkIdx++)
+        for (; _checkIdx + 2 < rfDataWriteIdx; _checkIdx++)
         {
             size_t i = _checkIdx;
             if ((rfData[i] == 0xac || rfData[i] == 0xca) &&
                 rfData[i + 1] == 0xaa && rfData[i + 2] == 0xaa)
             {
-                if (printAllPacket) 
+                if (printAllPacket)
                 {
                     //Serial.println("");
-                    Serial.println(toString(rfData, i+3, true));
+                    Serial.println(toString(rfData, i + 3, true));
                 }
                 bool isIthoRemote = true;
                 for (size_t i = 0; i < 6; i++)
                 {
-                    if(rfData[i] != preAmble[i]) {
+                    if (rfData[i] != preAmble[i])
+                    {
                         isIthoRemote = false;
                         break;
                     }
@@ -123,13 +131,14 @@ void IthoReceiveClass::loop()
                     }
                     else
                     {
-                        if (printNonRemote) {
-                        Serial.printf("other (crc=%d): ", crc);
-                        Serial.println(IthoDecode::toPrintString(s));
+                        if (printNonRemote)
+                        {
+                            Serial.printf("other (crc=%d): ", crc);
+                            Serial.println(IthoDecode::toPrintString(s));
                         }
                     }
                 }
-                
+
                 resetBuffer();
                 return;
             }

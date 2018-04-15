@@ -8,6 +8,7 @@ class IthoReceiveClass
 	void setup();
 	void loop();
 
+	void setInterruptPin(uint8_t);
 	void attachIter();
 	void detachIter();
 	void resetBuffer();
@@ -17,6 +18,7 @@ class IthoReceiveClass
 	bool printDebug = false;
 
   private:
+	uint8_t _irqPin = D2;
 	bool _gotIthoStart;
 	uint8_t _lastIndex;
 	size_t _oldSize = 0;
