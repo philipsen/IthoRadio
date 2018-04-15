@@ -45,7 +45,7 @@ void IthoSenderClass::sendCommand(const String &c)
 
     ByteArray id(_remoteId, 3);
     ByteArray cc(comBytes, comLength);
-    IthoCommand cmd(id, _counter, cc);
+    IthoCommand cmd(_remoteByte0, id, _counter, cc);
     String ps = cmd.toString();
     Serial.print("send cmd: ");
     Serial.println(ps);

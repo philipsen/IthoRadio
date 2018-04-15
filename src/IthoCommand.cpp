@@ -1,9 +1,9 @@
 #include "IthoCommand.h"
 
-IthoCommand::IthoCommand(ByteArray id, uint8_t counter, ByteArray command) : 
+IthoCommand::IthoCommand(uint8_t lead, ByteArray id, uint8_t counter, ByteArray command) : 
     _id(id), _command(command)
 {
-    //Serial.println("IthoCommand ctor");
+    _lead.init(&lead, 1);
     _counter.init(&counter, 1);
     _setCrc();
 }

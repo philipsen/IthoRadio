@@ -9,7 +9,7 @@ class IthoSenderClass
     void sendCommand(const String &c);
 
     void remoteId(uint8_t*);
-    
+
   private:
     static void _convertToPacket(const ByteArray &, CC1101Packet &);
 
