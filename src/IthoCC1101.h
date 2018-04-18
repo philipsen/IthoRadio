@@ -26,15 +26,11 @@ class IthoCC1101Class : public CC1101
 
 		void sendCommand(CC1101Packet outMessage);
 		void initReceiveMessage();
-    	void sendCommand(const String &c);	
 
 	private:
 		void initSendMessage(uint8_t pktLength);
 		void finishTransfer();
 
-		static void convertToPacket(const ByteArray &, CC1101Packet &);
-
-		uint8_t _counter = 87;
 }; 
 
 extern IthoCC1101Class IthoCC1101;

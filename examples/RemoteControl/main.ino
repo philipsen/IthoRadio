@@ -20,7 +20,11 @@ void setup()
     MqttCom.incomingTopic = "ithotest";
     MqttCom.setup();
 
-    pinMode(2, OUTPUT);
+    //IthoSender.remoteId((uint8_t*) {0x52, 0x50, 0xb9});
+
+    IthoReceive.setInterruptPin(2);
+    IthoReceive.printAllPacket = true;
+    IthoReceive.printNonRemote = false;
     IthoReceive.setup();
 
     setupIr();
