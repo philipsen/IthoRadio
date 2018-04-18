@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "IthoCC1101.h"
+#include "IthoSender.h"
 #include "MqttCom.h"
 #include "ESP8266WiFi.h"
 #include <PubSubClient.h>
@@ -14,7 +14,7 @@ void callback(char *topic, byte *payload, unsigned int length)
 
     // todo: check incoming topic
     String c = String((char *)payload);
-    IthoCC1101.sendCommand(c);
+    IthoSender.sendCommand(c);
 }
 
 MqttComClass::MqttComClass(const String &t) : incomingTopic(t)
@@ -51,7 +51,7 @@ void MqttComClass::_reconnect()
     {
         //Serial.print("Attempting MQTT connection...");
         // Attempt to connect, just a name to identify the client
-        if (_client->connect("IthoControl2"))
+        if (_client->connect(incomingTopic.c_str()))
         {
             //Serial.println("connected");
             // Once connected, publish an announcement...

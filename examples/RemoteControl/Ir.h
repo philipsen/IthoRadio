@@ -48,26 +48,26 @@ void receiveIRCommand()
         {
         case IRCMD_VENT_1:
             ventilation = 1;
-            IthoSender::turnOn();
+            IthoSender.turnOn();
             break;
 
         case IRCMD_VENT_2:
             ventilation = 2;
-            IthoSender::turnOn();
+            IthoSender.turnOn();
             break;
 
         case IRCMD_VENT_3:
             ventilation = 3;
-            IthoSender::turnOn();
+            IthoSender.turnOn();
             break;
 
         case IRCMD_VENT_4:
             ventilation = 4;
-            IthoSender::turnOn();
+            IthoSender.turnOn();
             break;
 
         case IRCMD_VENT_OFF:
-            IthoSender::turnOff();
+            IthoSender.turnOff();
             ventilation = 0;
             break;
         default:
@@ -75,7 +75,7 @@ void receiveIRCommand()
             break;
         }
         printf("vent = %d\n", ventilation);
-        
+
         irrecv.resume(); // receive the next value
     }
 }

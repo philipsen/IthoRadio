@@ -3,13 +3,19 @@
 #include <ESP8266WiFi.h>
 #include "IthoCC1101.h"
 #include "IthoDecode.h"
-#include "DemandIthoCommand.h"
+#include "IthoCommand.h"
 
 #define ITHO_IRQ_PIN D2
 #define LARGE_BUFFER_LEN 2052
 #define LARGE_DATA_LEN CC1101_BUFFER_LEN - 3
 uint8_t rfData[LARGE_BUFFER_LEN];
 volatile unsigned int rfDataWriteIdx = 0;
+
+void IthoReceiveClass::setInterruptPin(uint8_t pin)
+{
+    _irqPin = pin;
+    pinMode(_irqPin, OUTPUT);
+}
 
 String IthoReceiveClass::toString(uint8_t *data, unsigned int length, bool ashex)
 {
@@ -44,6 +50,8 @@ void IthoReceiveClass::setup()
 {
     pinMode(ITHO_IRQ_PIN, INPUT);
     attachIter();
+
+    IthoCC1101.initReceive();
 }
 
 void IthoReceiveClass::attachIter()
@@ -80,30 +88,32 @@ void IthoReceiveClass::loop()
 
         if (rfDataWriteIdx > 1500)
         {
-            if (printDebug) printf("loop: drop packet length %d\n", rfDataWriteIdx);
+            if (printDebug)
+                printf("loop: drop packet length %d\n", rfDataWriteIdx);
             rfDataWriteIdx = 0;
             //Serial.println(toString(rfData, rfDataWriteIdx, true));
             resetBuffer();
             return;
         }
-        uint8_t preAmble[] = {0xfe, 0x00, 0xb3, 0x2a, 0xab, 0x2a};  
+        uint8_t preAmble[] = {0xfe, 0x00, 0xb3, 0x2a, 0xab, 0x2a};
 
         //printf("loop check for end seq at %d %d\n", checkIdx+1, rfDataWriteIdx);
-        for (; _checkIdx+2 < rfDataWriteIdx; _checkIdx++)
+        for (; _checkIdx + 2 < rfDataWriteIdx; _checkIdx++)
         {
             size_t i = _checkIdx;
             if ((rfData[i] == 0xac || rfData[i] == 0xca) &&
                 rfData[i + 1] == 0xaa && rfData[i + 2] == 0xaa)
             {
-                if (printAllPacket) 
+                if (printAllPacket)
                 {
                     //Serial.println("");
-                    Serial.println(toString(rfData, i+3, true));
+                    Serial.println(toString(rfData, i + 3, true));
                 }
                 bool isIthoRemote = true;
                 for (size_t i = 0; i < 6; i++)
                 {
-                    if(rfData[i] != preAmble[i]) {
+                    if (rfData[i] != preAmble[i])
+                    {
                         isIthoRemote = false;
                         break;
                     }
@@ -111,27 +121,26 @@ void IthoReceiveClass::loop()
                 //printf("preamble check = %d\n", isIthoRemote);
                 if (isIthoRemote)
                 {
-                    String s = IthoDecode::decode2(rfData, i);
+                    String s = IthoDecode::decode(rfData, i);
                     uint8_t crc = IthoDecode::crc(s);
-                    //Serial.println(crc);
-                    //printf("crc val = %d\n", crc);
                     if (s.charAt(0) == 0x16)
                     {
                         Serial.printf("remote: ");
-                        String dc = IthoDecode::decode(rfData, i);
+                        //String dc = IthoDecode::decode(rfData, i);
                         //Serial.println(IthoDecode::toPrintString(dc));
-                        DemandIthoCommand cmd(s);
+                        IthoCommand cmd(s);
                         Serial.println(cmd.toString());
                     }
                     else
                     {
-                        if (printNonRemote) {
-                        Serial.printf("other (crc=%d): ", crc);
-                        Serial.println(IthoDecode::toPrintString(s));
+                        if (printNonRemote)
+                        {
+                            Serial.printf("other (crc=%d): ", crc);
+                            Serial.println(IthoDecode::toPrintString(s));
                         }
                     }
                 }
-                
+
                 resetBuffer();
                 return;
             }
