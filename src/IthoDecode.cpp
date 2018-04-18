@@ -85,7 +85,10 @@ String IthoDecode::decode(uint8_t *data, uint8_t length)
 ByteArray IthoDecode::encode(IthoCommand &cmd)
 {
     unsigned int cmdLength = 1 + cmd.id().length() + 1 + cmd.command().length() + 1;
-    Serial.printf("IthoDecode::encode cmd=%s  l=%d\n", cmd.toString().c_str(), cmdLength);
+    if (DEBUG)
+    {
+        Serial.printf("IthoDecode::encode cmd=%s  l=%d\n", cmd.toString().c_str(), cmdLength);
+    }
     BitArray tmp(0, cmdLength * 8);
     tmp.append(cmd.lead());
     tmp.append(cmd.id());

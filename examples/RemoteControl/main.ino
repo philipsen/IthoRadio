@@ -23,8 +23,8 @@ void setup()
     //IthoSender.remoteId((uint8_t*) {0x52, 0x50, 0xb9});
 
     IthoReceive.setInterruptPin(2);
-    IthoReceive.printAllPacket = true;
-    IthoReceive.printNonRemote = false;
+    IthoReceive.printAllPacket = false;
+    IthoReceive.printNonRemote = true;
     IthoReceive.setup();
 
     setupIr();
