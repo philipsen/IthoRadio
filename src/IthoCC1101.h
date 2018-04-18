@@ -20,6 +20,7 @@ class IthoCC1101Class : public CC1101
 		IthoCC1101Class();
 		~IthoCC1101Class();
 		
+		void setup();
 		void init() { CC1101::init(); }
 		void initReceive();
 

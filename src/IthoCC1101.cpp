@@ -37,6 +37,14 @@ IthoCC1101Class::~IthoCC1101Class()
 {
 } 
 
+void IthoCC1101Class::setup() 
+{
+    Serial.println("setup begin");
+    IthoCC1101.init();
+    IthoCC1101.initReceive();
+    Serial.println("setup done");
+}
+
 void IthoCC1101Class::initSendMessage(uint8_t pktLength)
 {
 	//finishTransfer();
