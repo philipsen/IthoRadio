@@ -10,7 +10,6 @@ class IthoCommand
         IthoCommand(uint8_t leadByte, ByteArray id, uint8_t counter, ByteArray command);
 
         IthoCommand(const String& s) {
-            //printf("IthoCommand ctor\n");
             _lead.substring(s, 0, 1);
             _id.substring(s, 1, 4);
             _counter.substring(s, 4, 5);
@@ -18,27 +17,8 @@ class IthoCommand
             _crc.substring(s, s.length()-1, s.length());
         }
 
-        uint8_t sum()
-        {
-            return _lead.sum() + _id.sum() + _counter.sum() + _command.sum() + _crc.sum();
-        }
-
-        String toString()
-        {
-            uint8_t crc = sum();
-            
-            String r = "i = ";
-            r += _lead.toString();
-            r += _id.toString();
-            r += " cn = ";
-            r += _counter.toString();
-            r += " cmd = ";
-            r += _command.toString();
-            r += " cs = ";
-            r += _crc.toString();
-            r += " cr = " + String(crc);
-            return r;
-        }
+        uint8_t sum() { return _lead.sum() + _id.sum() + _counter.sum() + _command.sum() + _crc.sum(); }
+        String toString();
 
         const ByteArray& lead() const { return _lead; }
         const ByteArray& id() const { return _id; }

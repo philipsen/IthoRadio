@@ -1,7 +1,7 @@
 #include "IthoDecode.h"
 #include "IthoCommand.h"
 
-#define DEBUG 0
+#define DEBUG 1
 
 String IthoDecode::toPrintString(const String &s)
 {
@@ -84,9 +84,10 @@ String IthoDecode::decode(uint8_t *data, uint8_t length)
 
 ByteArray IthoDecode::encode(IthoCommand &cmd)
 {
-    unsigned int cmdLength = cmd.id().length() + 1 + cmd.command().length() + 1;
+    unsigned int cmdLength = 1 + cmd.id().length() + 1 + cmd.command().length() + 1;
     Serial.printf("IthoDecode::encode cmd=%s  l=%d\n", cmd.toString().c_str(), cmdLength);
     BitArray tmp(0, cmdLength * 8);
+    tmp.append(cmd.lead());
     tmp.append(cmd.id());
     tmp.append(cmd.counter());
     tmp.append(cmd.command());
@@ -100,18 +101,16 @@ ByteArray IthoDecode::encode(IthoCommand &cmd)
     }
 
     size_t numOct = (cmdLength * 8) / 4;
-    BitArray tmp2(2 + (numOct * 5));
-    tmp2.set(0, false);
-    tmp2.set(1, true);
+    BitArray tmp2(numOct * 5);
     for (size_t i = 0; i < numOct; i++)
     {
         // use a half byte, reverse
         for (size_t j = 0; j < 4; j++)
         {
-            tmp2.set(2 + (5 * i) + (3 - j), tmp.get((4 * i) + j));
+            tmp2.set((5 * i) + (3 - j), tmp.get((4 * i) + j));
         }
         // set and extra bit to 1 to complete the octet
-        tmp2.set(2 + (5 * i) + 4, true);
+        tmp2.set((5 * i) + 4, true);
     }
 
     if (DEBUG)
@@ -120,12 +119,13 @@ ByteArray IthoDecode::encode(IthoCommand &cmd)
         //tmp2.print();
         Serial.println(tmp2.toString(4));
     }
-    BitArray tmp3(0, (8 * 8) + (tmp2.length() * 2) + (16 * 8));
-    tmp3.append(ByteArray(_preamble, 8));
+
+    BitArray tmp3(0, (6 * 8) + (tmp2.length() * 2) + (16 * 8));
+    tmp3.append(ByteArray(_preamble, 6));
     for (size_t i = 0; i < tmp2.length(); i++)
     {
-        tmp3.set((8 * 8) + (i * 2), tmp2.get(i));
-        tmp3.set((8 * 8) + (i * 2) + 1, !tmp2.get(i));
+        tmp3.set((6 * 8) + (i * 2), tmp2.get(i));
+        tmp3.set((6 * 8) + (i * 2) + 1, !tmp2.get(i));
     }
 
     tmp3.append(ByteArray(_postamble, 16));
@@ -137,5 +137,5 @@ ByteArray IthoDecode::encode(IthoCommand &cmd)
     return ByteArray(tmp3);
 }
 
-const uint8_t IthoDecode::_preamble[] = {0xfe, 0x00, 0xb3, 0x2a, 0xab, 0x2a, 0x95, 0x9a};
+const uint8_t IthoDecode::_preamble[] = {0xfe, 0x00, 0xb3, 0x2a, 0xab, 0x2a};
 const uint8_t IthoDecode::_postamble[] = {0xac, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa};

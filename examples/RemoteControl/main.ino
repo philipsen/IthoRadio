@@ -17,13 +17,13 @@ void setup()
     setupWifi();
     setupOta();
 
-    MqttCom.incomingTopic = "ithotest";
+    MqttCom.incomingTopic = "ithoin";
     MqttCom.setup();
 
-    IthoSender.remoteId({0x52, 0x50, 0xb9});
+    //IthoSender.remoteId((uint8_t*) {0x52, 0x50, 0xb9});
 
     IthoReceive.setInterruptPin(2);
-    IthoReceive.printAllPacket = false;
+    IthoReceive.printAllPacket = true;
     IthoReceive.printNonRemote = false;
     IthoReceive.setup();
 

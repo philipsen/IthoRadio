@@ -7,7 +7,6 @@ class IthoDecode
 {
   public:
     static ByteArray encode(IthoCommand& cmd);
-
     static String decode(uint8_t *data, uint8_t length);
 
     static uint8_t crc(const String& rawByteString);

@@ -14,8 +14,7 @@ class IthoSenderClass
     static void _convertToPacket(const ByteArray &, CC1101Packet &);
 
     uint8_t _counter = 87;
-
-    uint8_t _remoteId[3] = {0, 0, 0};
+    uint8_t _remoteId[3] = {0x52, 0x50, 0xb9};
     uint8_t _remoteByte0 = 0x16;
 };
 
