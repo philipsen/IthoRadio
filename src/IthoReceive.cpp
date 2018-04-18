@@ -50,6 +50,8 @@ void IthoReceiveClass::setup()
 {
     pinMode(ITHO_IRQ_PIN, INPUT);
     attachIter();
+
+    IthoCC1101.initReceive();
 }
 
 void IthoReceiveClass::attachIter()

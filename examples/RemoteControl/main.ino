@@ -17,7 +17,7 @@ void setup()
     setupWifi();
     setupOta();
 
-    MqttCom.incomingTopic = "ithoin";
+    MqttCom.incomingTopic = "ithotest";
     MqttCom.setup();
 
     //IthoSender.remoteId((uint8_t*) {0x52, 0x50, 0xb9});

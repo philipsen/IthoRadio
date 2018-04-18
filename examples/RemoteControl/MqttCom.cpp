@@ -51,7 +51,7 @@ void MqttComClass::_reconnect()
     {
         //Serial.print("Attempting MQTT connection...");
         // Attempt to connect, just a name to identify the client
-        if (_client->connect("IthoControl2"))
+        if (_client->connect(incomingTopic.c_str()))
         {
             //Serial.println("connected");
             // Once connected, publish an announcement...

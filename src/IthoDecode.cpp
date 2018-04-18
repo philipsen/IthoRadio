@@ -1,7 +1,7 @@
 #include "IthoDecode.h"
 #include "IthoCommand.h"
 
-#define DEBUG 1
+#define DEBUG 0
 
 String IthoDecode::toPrintString(const String &s)
 {
