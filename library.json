@@ -1,5 +1,6 @@
 {
     "name": "IthoRadio",
+    "version": "1.0.0",
     "keywords": "Itho, CC1101, radio",
     "description": "Arduino library for analysing and using Itho ventilation remote control radio traffic",
     "authors":
