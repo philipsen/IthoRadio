@@ -9,6 +9,13 @@
 
 void setupWifi();
 
+String remoteName = "ithotest";
+
+void logger(const String& m)
+{
+    MqttCom.publish((String("itholog/") + remoteName).c_str(), m.c_str());
+}
+
 void setup()
 {
     Serial.begin(115200);
@@ -17,15 +24,15 @@ void setup()
     setupWifi();
     setupOta();
 
-    MqttCom.incomingTopic = "ithotest";
+    MqttCom.incomingTopic = remoteName.c_str();
     MqttCom.setup();
-
-    //IthoSender.remoteId((uint8_t*) {0x52, 0x50, 0xb9});
 
     IthoReceive.setInterruptPin(2);
     IthoReceive.printAllPacket = false;
     IthoReceive.printNonRemote = true;
     IthoReceive.setup();
+
+    IthoSender.logger(logger);
 
     setupIr();
 }

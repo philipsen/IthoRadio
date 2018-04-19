@@ -12,7 +12,8 @@ void IthoSenderClass::sendCommand(const String &c)
 {
     Serial.print("send command: ");
     Serial.println(c);
-
+    _log(String("send/") + c);
+    
     unsigned int comLength = 0;
     
     size_t i;
@@ -72,5 +73,16 @@ void IthoSenderClass::remoteId(uint8_t* id)
     }
 }
 
+void IthoSenderClass::logger(void (*callback) (const String&))
+{
+    _logger = callback;
+}
+
+void IthoSenderClass::_log(const String &s)
+{
+    if (_logger != NULL) {
+        _logger(s);
+    }
+}
 
 IthoSenderClass IthoSender;

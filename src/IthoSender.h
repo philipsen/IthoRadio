@@ -10,8 +10,12 @@ class IthoSenderClass
 
     void remoteId(uint8_t*);
 
+    void logger(void (*) (const String&));
+
   private:
     static void _convertToPacket(const ByteArray &, CC1101Packet &);
+    void (* _logger) (const String&) = NULL;   
+    void _log(const String &s);
 
     uint8_t _counter = 87;
     uint8_t _remoteId[3] = {0x52, 0x50, 0xb9};
