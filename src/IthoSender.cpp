@@ -13,28 +13,26 @@ void IthoSenderClass::sendCommand(const String &c)
     Serial.print("send command: ");
     Serial.println(c);
     _log(String("send/") + c);
-    
+    const RemoteCommand* remoteCommand = _lookupByName(c, commands);
+    _send(_remoteId, remoteCommand);
+}
+
+void IthoSenderClass::sendCommandRoom(const String &c)
+{
+    Serial.print("send command room: ");
+    Serial.println(c);
+    _log(String("sendRoom/") + c);
+    const RemoteCommand* remoteCommand = _lookupByName(c, commandsRoom);
+    _send(_remoteIdRoom, remoteCommand);
+}
+
+void IthoSenderClass::_send(uint8_t remoteId[], const RemoteCommand* remoteCommand)
+{
     unsigned int comLength = 0;
-    
-    size_t i;
-    for (i = 0; c != commands[i].name; i++)
-    {
-        if (commands[i].name == NULL) 
-        {
-            printf("unknown command %s\n", c.c_str());
-            return;
-        }
-    }
+    const uint8_t* comBytes = remoteCommand->bytes;
+    comLength = remoteCommand->length;
 
-    if (c == "comfort" || c == "eco") {
-        digitalWrite(D0, 1);
-    } else {
-        digitalWrite(D0, 0);
-    }
-    const uint8_t* comBytes = commands[i].bytes;
-    comLength = commands[i].length;
-
-    ByteArray id(_remoteId, 3);
+    ByteArray id(remoteId, 3);
     ByteArray cc(comBytes, comLength);
     IthoCommand cmd(_remoteByte0, id, _counter, cc);
     String ps = cmd.toString();
@@ -45,7 +43,6 @@ void IthoSenderClass::sendCommand(const String &c)
 
     //Serial.print("send encoded: ");
     //Serial.println(cmdEncoded.toString());
-
     CC1101Packet p;
     _convertToPacket(cmdEncoded, p);
     IthoCC1101.sendCommand(p);
@@ -65,11 +62,19 @@ void IthoSenderClass::_convertToPacket(const ByteArray &a, CC1101Packet &p)
     }
 }
 
-void IthoSenderClass::remoteId(uint8_t* id)
+void IthoSenderClass::remoteId(const uint8_t* id)
 {
     for (size_t i = 0; i < 3; i++)
     {
         _remoteId[i] = id[i];
+    }
+}
+
+void IthoSenderClass::remoteIdRoom(const uint8_t* id)
+{
+    for (size_t i = 0; i < 3; i++)
+    {
+        _remoteIdRoom[i] = id[i];
     }
 }
 
@@ -83,6 +88,26 @@ void IthoSenderClass::_log(const String &s)
     if (_logger != NULL) {
         _logger(s);
     }
+}
+
+const RemoteCommand* IthoSenderClass::_lookupByName(const String& c, const RemoteCommand commands[])
+{
+    size_t i;
+    for (i = 0; c != commands[i].name; i++)
+    {
+        if (commands[i].name == NULL) 
+        {
+            printf("unknown command %s\n", c.c_str());
+            return NULL;
+        }
+    }
+
+    if (c == "comfort" || c == "eco") {
+        digitalWrite(D0, 1);
+    } else {
+        digitalWrite(D0, 0);
+    }
+    return &(commands[i]);
 }
 
 IthoSenderClass IthoSender;
