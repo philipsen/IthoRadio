@@ -14,6 +14,7 @@ void IthoSenderClass::sendCommand(const String &c)
     Serial.println(c);
     _log(String("send/") + c);
     const RemoteCommand* remoteCommand = _lookupByName(c, commands);
+    if (remoteCommand == NULL) return;
     _send(_remoteId, remoteCommand);
 }
 
@@ -23,6 +24,7 @@ void IthoSenderClass::sendCommandRoom(const String &c)
     Serial.println(c);
     _log(String("sendRoom/") + c);
     const RemoteCommand* remoteCommand = _lookupByName(c, commandsRoom);
+    if (remoteCommand == NULL) return;
     _send(_remoteIdRoom, remoteCommand);
 }
 
