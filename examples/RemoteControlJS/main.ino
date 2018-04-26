@@ -100,10 +100,12 @@ void handleSend()
 
     if (id == "k")
     {
+        IthoSender.sendCommandRoom("auto1");
         IthoSender.sendCommand(command);
     }
     else
     {
+        IthoSender.sendCommand("eco");
         IthoSender.sendCommandRoom(command);
     }
     returnOK();
@@ -138,7 +140,7 @@ bool handleFileRead(String path)
     if (SPIFFS.exists(path))
     {                                                       // If the file exists
         File file = SPIFFS.open(path, "r");                 // Open it
-        size_t sent = server.streamFile(file, contentType); // And send it to the client
+        server.streamFile(file, contentType); // And send it to the client
         file.close();                                       // Then close the file again
         return true;
     }

@@ -8,7 +8,7 @@ String IthoDecode::toPrintString(const String &s)
     String r;
     for (size_t i = 0; i < s.length(); i++)
     {
-        char c = s.charAt(i);
+        //char c = s.charAt(i);
         //printf("tps: %d %2x %c\n", i, c, isPrintable(c) ? c : ' ');
         r += String(s.charAt(i), HEX);
         if ((i + 1) < s.length())
