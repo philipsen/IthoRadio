@@ -15,6 +15,6 @@ env:
 script:
 - set -eo pipefail;
   for e in examples/*; do
-    platformio ci --board=$BOARD --lib=. $e/*  --project-conf examples/ini ;
+    platformio ci --board=$BOARD   --project-conf examples/ini --lib=. $e/* ;
   done
   
