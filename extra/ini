@@ -3,4 +3,4 @@
 platform = espressif8266
 board = nodemcuv2
 framework = arduino
-lib_deps = https://github.com/philipsen/IthoRadio, 2108
+lib_deps = https://github.com/philipsen/IthoRadio, 2108, IRremoteESP8266, ESP8266WebServer
