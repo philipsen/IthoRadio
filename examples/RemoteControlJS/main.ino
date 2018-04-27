@@ -1,11 +1,10 @@
+#ifndef UNIT_TEST
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
-
 #include <WiFiUdp.h>
 #include <FS.h>
 #include <WiFiManager.h>
-
 #include <IthoReceive.h>
 #include <IthoSender.h>
 
@@ -60,7 +59,7 @@ void setup()
 
     IthoReceive.setInterruptPin(2);
     IthoReceive.printAllPacket = false;
-    IthoReceive.printNonRemote = true;
+    IthoReceive.printNonRemote = false;
     IthoReceive.setup();
 }
 
@@ -81,7 +80,7 @@ void handleNotFound()
     server.send(404, "text/plain", "404: Not found"); // Send HTTP status 404 (Not Found) when there's no handler for the URI in the request
 }
 
-const uint8_t keukenId[] = {0x52, 0x50, 0xb9};
+const uint8_t keukenId[] = {0x52, 0x4d, 0x45};
 const uint8_t badkamerId[] = {0x74, 0xf3, 0xaf};
 
 void handleSend()
@@ -105,7 +104,7 @@ void handleSend()
     }
     else
     {
-        IthoSender.sendCommand("eco");
+        //IthoSender.sendCommand("eco");
         IthoSender.sendCommandRoom(command);
     }
     returnOK();
@@ -174,3 +173,5 @@ void setupOta()
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
 }
+
+#endif
