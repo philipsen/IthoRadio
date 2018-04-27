@@ -43,8 +43,8 @@ void IthoSenderClass::_send(uint8_t remoteId[], const RemoteCommand* remoteComma
 
     ByteArray cmdEncoded = IthoDecode::encode(cmd);
 
-    //Serial.print("send encoded: ");
-    //Serial.println(cmdEncoded.toString());
+    Serial.print("send encoded: ");
+    Serial.println(cmdEncoded.toString());
     CC1101Packet p;
     _convertToPacket(cmdEncoded, p);
     IthoCC1101.sendCommand(p);
