@@ -1,7 +1,8 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
-#include <assert.h>
+#include <WiFiManager.h>
+
 #include <IthoReceive.h>
 #include "Ir.h"
 #include "MqttCom.h"
@@ -21,7 +22,13 @@ void setup()
     Serial.begin(115200);
     Serial.println("\nBooting");
 
-    setupWifi();
+    WiFiManager wifiManager;    //wifiManager.resetSettings();
+    wifiManager.autoConnect("AutoConnectAP", "123456");
+    if (MDNS.begin("ithoremote"))
+        Serial.println("mDNS responder started");
+    else
+        Serial.println("Error setting up MDNS responder!");
+
     setupOta();
 
     MqttCom.incomingTopic = remoteName.c_str();
