@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <ESP8266WiFi.h>
 
 class PubSubClient;
 
@@ -14,6 +15,15 @@ public:
 private:
   PubSubClient *_client;
   void _reconnect();
+
+  String _toStringIp(IPAddress ip) {
+    String res = "";
+    for (int i = 0; i < 3; i++) {
+      res += String((ip >> (8 * i)) & 0xFF) + ".";
+    }
+    res += String(((ip >> 8 * 3)) & 0xFF);
+    return res;
+  }
 };
 
 extern MqttComClass MqttCom;
