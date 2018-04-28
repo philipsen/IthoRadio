@@ -105,3 +105,8 @@ void setupWeb()
     MDNS.addService("http", "tcp", 80);
 
 }
+
+void loopWeb()
+{
+  server.handleClient(); // Listen for HTTP requests from clients
+}

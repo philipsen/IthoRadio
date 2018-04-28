@@ -10,6 +10,7 @@
 
 void setupWifi();
 void setupWeb();
+void loopWeb();
 
 String remoteName = "ithotest";
 
@@ -50,6 +51,7 @@ void loop()
 {
     ArduinoOTA.handle();
     IthoReceive.loop();
+    loopWeb();
     MqttCom.loop();
     loopIr();
 }
