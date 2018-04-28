@@ -9,6 +9,7 @@
 #include "Ota.h"
 
 void setupWifi();
+void setupWeb();
 
 String remoteName = "ithotest";
 
@@ -31,6 +32,8 @@ void setup()
 
     setupOta();
 
+    setupWeb();
+
     MqttCom.incomingTopic = remoteName.c_str();
     MqttCom.setup();
 
@@ -38,7 +41,6 @@ void setup()
     IthoReceive.printAllPacket = false;
     IthoReceive.printNonRemote = true;
     IthoReceive.setup();
-
     IthoSender.logger(logger);
 
     setupIr();
