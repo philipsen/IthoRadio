@@ -8,11 +8,14 @@
 #include "MqttCom.h"
 #include "Ota.h"
 
+
 void setupWifi();
 void setupWeb();
 void loopWeb();
 
-String remoteName = "ithotest";
+String remoteName = "ithoin";
+const uint8_t keukenId[] = {0x52, 0x50, 0xb9};
+const uint8_t badkamerId[] = {0x74, 0xf3, 0xaf};
 
 void logger(const String& m)
 {
@@ -43,6 +46,9 @@ void setup()
     IthoReceive.printNonRemote = true;
     IthoReceive.setup();
     IthoSender.logger(logger);
+
+    IthoSender.remoteId(keukenId);
+    IthoSender.remoteIdRoom(badkamerId);
 
     setupIr();
 }

@@ -49,7 +49,7 @@ void MqttComClass::_reconnect()
     // Loop until we're reconnected
     while (!_client->connected())
     {
-        //Serial.print("Attempting MQTT connection...");
+        Serial.print("Attempting MQTT connection...");
         // Attempt to connect, just a name to identify the client
         if (_client->connect(incomingTopic.c_str()))
         {
@@ -61,6 +61,7 @@ void MqttComClass::_reconnect()
             {
                 _client->subscribe(incomingTopic.c_str(), 0);
             }
+            Serial.println(WiFi.localIP());
             String m = String("connected ip = ") + String(WiFi.localIP());
             _client->publish("ithocontrol/log", m.c_str());
         }
