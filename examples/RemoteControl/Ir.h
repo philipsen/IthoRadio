@@ -31,22 +31,26 @@ void setupIr()
 
 void loopIr()
 {
+    //MqttCom.logger("ir loop");
     receiveIRCommand();
 }
 
 // Receive and decode IR commands and control hood upon received command
 void receiveIRCommand()
 {
+    //MqttCom.logger("ir loop");
     // have we received an IR signal?
     if (irrecv.decode(&results))
     {
+
         int ventilation = 0;
         Serial.println("Received IR command: ");
         Serial.println((long)results.value, HEX);
-
+        MqttCom.logger(String("received "));
         switch ((long)results.value)
         {
         case IRCMD_VENT_1:
+            MqttCom.logger("turn on");
             ventilation = 1;
             IthoSender.turnOn();
             break;

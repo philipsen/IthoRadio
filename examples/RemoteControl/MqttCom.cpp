@@ -25,7 +25,7 @@ MqttComClass::MqttComClass(const String &t) : incomingTopic(t)
 void MqttComClass::setup()
 {
     //connect to MQTT server
-    _client->setServer("pi3.lan", 1883);
+    _client->setServer("gc.cwvzuidpoort.org", 1883);
     _client->setCallback(callback);
 }
 
@@ -36,7 +36,8 @@ void MqttComClass::loop()
     {
         _reconnect();
     }
-    _client->loop();
+    if (_client->connected())
+        _client->loop();
 }
 
 void MqttComClass::publish(const char *c, const char *m)
@@ -61,8 +62,15 @@ void MqttComClass::_reconnect()
             {
                 _client->subscribe(incomingTopic.c_str(), 0);
             }
+            char buf[20];
+            IPAddress ip = WiFi.localIP();
+            sprintf(buf, "ip: %u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]);
+
             String m = String("connected ip = ") + String(WiFi.localIP());
-            _client->publish("ithocontrol/log", m.c_str());
+            _client->publish("wmt6/log", buf);
+            publish("wmt6/log", "via pub");
+            logger("via logger");
+            logger(incomingTopic);
         }
         else
         {
@@ -72,8 +80,13 @@ void MqttComClass::_reconnect()
             // Wait 5 seconds before retrying
             delay(5000);
         }
-        //printf("connected = %d\n", _client->connected());
+        printf("re connected = %d\n", _client->connected());
     }
+}
+
+void MqttComClass::logger(const String& m)
+{
+    publish(String("wmt6/log").c_str(), m.c_str());
 }
 
 MqttComClass MqttCom("ithoin");

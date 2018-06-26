@@ -10,8 +10,9 @@ public:
   void loop();
   void publish(const char *c, const char *m);
   String incomingTopic;
-
-private:
+  void logger(const String& m);
+  
+public:
   PubSubClient *_client;
   void _reconnect();
 };

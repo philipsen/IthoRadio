@@ -4,9 +4,12 @@
 #include <WiFiManager.h>
 
 #include <IthoReceive.h>
-#include "Ir.h"
 #include "MqttCom.h"
+
+#include "Ir.h"
 #include "Ota.h"
+
+#include <PubSubClient.h>
 
 void setupWifi();
 void setupWeb();
@@ -15,8 +18,9 @@ String remoteName = "ithotest";
 
 void logger(const String& m)
 {
-    MqttCom.publish((String("itholog/") + remoteName).c_str(), m.c_str());
+    MqttCom.publish("wmt6/log", m.c_str());
 }
+
 
 void setup()
 {
@@ -34,16 +38,19 @@ void setup()
 
     setupWeb();
 
-    MqttCom.incomingTopic = remoteName.c_str();
+    MqttCom.incomingTopic = "wmt6/+/command";
     MqttCom.setup();
+    MqttCom.loop();
 
     IthoReceive.setInterruptPin(2);
     IthoReceive.printAllPacket = false;
-    IthoReceive.printNonRemote = true;
+    IthoReceive.printNonRemote = false;
     IthoReceive.setup();
     IthoSender.logger(logger);
 
     setupIr();
+
+    logger("setup done");
 }
 
 void loop()
