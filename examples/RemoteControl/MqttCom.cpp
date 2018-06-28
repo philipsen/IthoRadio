@@ -27,6 +27,9 @@ void MqttComClass::setup()
     //connect to MQTT server
     _client->setServer("gc.cwvzuidpoort.org", 1883);
     _client->setCallback(callback);
+
+    // force connecting
+    loop();
 }
 
 void MqttComClass::loop()
@@ -52,7 +55,7 @@ void MqttComClass::_reconnect()
     {
         //Serial.print("Attempting MQTT connection...");
         // Attempt to connect, just a name to identify the client
-        if (_client->connect(incomingTopic.c_str()))
+        if (_client->connect(clientName.c_str()))
         {
             //Serial.println("connected");
             // Once connected, publish an announcement...
@@ -67,10 +70,7 @@ void MqttComClass::_reconnect()
             sprintf(buf, "ip: %u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]);
 
             String m = String("connected ip = ") + String(WiFi.localIP());
-            _client->publish("wmt6/log", buf);
-            publish("wmt6/log", "via pub");
-            logger("via logger");
-            logger(incomingTopic);
+            logger(String("topic=") + incomingTopic);
         }
         else
         {
@@ -86,7 +86,7 @@ void MqttComClass::_reconnect()
 
 void MqttComClass::logger(const String& m)
 {
-    publish(String("wmt6/log").c_str(), m.c_str());
+    publish((clientName + String("/log")).c_str(), m.c_str());
 }
 
 MqttComClass MqttCom("ithoin");

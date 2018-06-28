@@ -2,6 +2,7 @@
 #include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
 #include <WiFiManager.h>
+#include "WifiSetup.h"
 
 #include <IthoReceive.h>
 #include "MqttCom.h"
@@ -18,7 +19,7 @@ String remoteName = "ithotest";
 
 void logger(const String& m)
 {
-    MqttCom.publish("wmt6/log", m.c_str());
+    MqttCom.logger(m);
 }
 
 
@@ -27,8 +28,8 @@ void setup()
     Serial.begin(115200);
     Serial.println("\nBooting");
 
-    WiFiManager wifiManager;    //wifiManager.resetSettings();
-    wifiManager.autoConnect("AutoConnectAP", "123456");
+    setupWifi();
+
     if (MDNS.begin("ithoremote"))
         Serial.println("mDNS responder started");
     else
@@ -38,10 +39,11 @@ void setup()
 
     setupWeb();
 
-    MqttCom.incomingTopic = "wmt6/+/command";
+    MqttCom.clientName = house_token;
+    MqttCom.incomingTopic = String(house_token) + "/+/command";
     MqttCom.setup();
-    MqttCom.loop();
 
+    Serial.println("IthoReceive.setInterruptPin");
     IthoReceive.setInterruptPin(2);
     IthoReceive.printAllPacket = false;
     IthoReceive.printNonRemote = false;
