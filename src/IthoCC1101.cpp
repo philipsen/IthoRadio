@@ -28,10 +28,8 @@ IthoCC1101Class::~IthoCC1101Class()
 
 void IthoCC1101Class::setup() 
 {
-    Serial.println("setup begin");
     IthoCC1101.init();
     IthoCC1101.initReceive();
-    Serial.println("setup done");
 }
 
 void IthoCC1101Class::initSendMessage(uint8_t pktLength)
@@ -164,7 +162,14 @@ void IthoCC1101Class::initReceive()
 	writeCommand(CC1101_SCAL);
 
 	//wait for calibration to finish
-	while ((readRegisterWithSyncProblem(CC1101_MARCSTATE, CC1101_STATUS_REGISTER)) != CC1101_MARCSTATE_IDLE) yield();
+	int cnt = 0;
+	while ((readRegisterWithSyncProblem(CC1101_MARCSTATE, CC1101_STATUS_REGISTER)) != CC1101_MARCSTATE_IDLE) {
+		yield();
+		if (cnt++ > 100) {
+			Serial.println("IthoCC1101Class::initReceive error in init");
+			return;
+		}
+	}
 
 	writeRegister(CC1101_FSCAL2 ,0x00);
 	writeRegister(CC1101_MCSM0 ,0x18);			//no auto calibrate
@@ -220,7 +225,7 @@ void IthoCC1101Class::initReceive()
 	writeCommand(CC1101_SRX);
 	
 	while ((readRegisterWithSyncProblem(CC1101_MARCSTATE, CC1101_STATUS_REGISTER)) != CC1101_MARCSTATE_RX) yield();
-	
+
 	initReceiveMessage();
 }
 
@@ -249,10 +254,16 @@ void  IthoCC1101Class::initReceiveMessage()
 	writeCommand(CC1101_SRX); //switch to RX state
 
 	// Check that the RX state has been entered
+	int cnt = 0;
 	while (((marcState = readRegisterWithSyncProblem(CC1101_MARCSTATE, CC1101_STATUS_REGISTER)) & CC1101_BITS_MARCSTATE) != CC1101_MARCSTATE_RX)
 	{
 		if (marcState == CC1101_MARCSTATE_RXFIFO_OVERFLOW) // RX_OVERFLOW
 			writeCommand(CC1101_SFRX); //flush RX buffer
+
+		if (cnt++ > 100) {
+			Serial.println("init failed");
+			break;
+		}
 	}
 }
 
