@@ -17,7 +17,7 @@ void saveConfigCallback () {
 }
 
 
-void setupWifi() {
+void setupWifi(bool withReset) {
   // put your setup code here, to run once:
   Serial.begin(115200);
   Serial.println();
@@ -86,8 +86,10 @@ void setupWifi() {
   wifiManager.addParameter(&custom_house_token);
 
   //reset settings - for testing
-  //wifiManager.resetSettings();
-
+  if (withReset) {
+    wifiManager.resetSettings();
+  }
+  
   //set minimu quality of signal so it ignores AP's under that quality
   //defaults to 8%
   //wifiManager.setMinimumSignalQuality();

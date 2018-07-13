@@ -28,7 +28,7 @@ void setup()
     Serial.begin(115200);
     Serial.println("\nBooting");
 
-    setupWifi();
+    setupWifi(false);
 
     if (MDNS.begin("ithoremote"))
         Serial.println("mDNS responder started");
@@ -40,7 +40,7 @@ void setup()
     setupWeb();
 
     MqttCom.clientName = house_token;
-    MqttCom.incomingTopic = String(house_token) + "/+/command";
+    MqttCom.incomingTopic = String(house_token) + "/+/+";
     MqttCom.setup();
 
     Serial.println("IthoReceive.setInterruptPin");

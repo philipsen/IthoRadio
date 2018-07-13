@@ -6,6 +6,8 @@
 
 WiFiClient espClient;
 
+void setupWifi(bool);
+
 //print any message received for subscribed topic
 void callback(char *topic, byte *payload, unsigned int length)
 {
@@ -14,7 +16,20 @@ void callback(char *topic, byte *payload, unsigned int length)
 
     // todo: check incoming topic
     String c = String((char *)payload);
-    IthoSender.sendCommand(c);
+    String t = String((char *)topic);
+    String localCommand = t.substring(t.indexOf('/')+1);
+    //MqttCom.logger(String("lcmd/") + localCommand);
+
+    String command = localCommand.substring(0, localCommand.indexOf('/'));
+    MqttCom.logger(String("cmd/") + command);
+    if (command == "command") {
+        IthoSender.sendCommand(c);
+    }
+
+    if (command == "reset") {
+        MqttCom.logger("resetting");
+        setupWifi(true);
+    }
 }
 
 MqttComClass::MqttComClass(const String &t) : incomingTopic(t)
@@ -67,10 +82,11 @@ void MqttComClass::_reconnect()
             }
             char buf[20];
             IPAddress ip = WiFi.localIP();
-            sprintf(buf, "ip: %u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]);
+            sprintf(buf, "ip/%u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]);
 
             String m = String("connected ip = ") + String(WiFi.localIP());
-            logger(String("topic=") + incomingTopic);
+            logger(buf);
+            logger(String("topic/") + incomingTopic);
         }
         else
         {
@@ -80,13 +96,13 @@ void MqttComClass::_reconnect()
             // Wait 5 seconds before retrying
             delay(5000);
         }
-        printf("re connected = %d\n", _client->connected());
+        printf("connected = %d\n", _client->connected());
     }
 }
 
 void MqttComClass::logger(const String& m)
 {
-    publish((clientName + String("/log")).c_str(), m.c_str());
+    publish((String("itho/") + clientName + String("/log")).c_str(), m.c_str());
 }
 
 MqttComClass MqttCom("ithoin");
