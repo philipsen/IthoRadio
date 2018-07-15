@@ -4,6 +4,8 @@
 #include "ESP8266WiFi.h"
 #include <PubSubClient.h>
 
+#include <IthoReceive.h>
+
 WiFiClient espClient;
 
 void setupWifi(bool);
@@ -18,7 +20,7 @@ void callback(char *topic, byte *payload, unsigned int length)
     String c = String((char *)payload);
     String t = String((char *)topic);
     String localCommand = t.substring(t.indexOf('/')+1);
-    //MqttCom.logger(String("lcmd/") + localCommand);
+    MqttCom.logger(String("lcmd/") + localCommand);
 
     String command = localCommand.substring(0, localCommand.indexOf('/'));
     MqttCom.logger(String("cmd/") + command);
@@ -29,6 +31,23 @@ void callback(char *topic, byte *payload, unsigned int length)
     if (command == "reset") {
         MqttCom.logger("resetting");
         setupWifi(true);
+    }
+
+    if (command == "set") {
+        String variable = c.substring(0, c.indexOf('/'));
+        String value = c.substring(c.indexOf('/')+1);
+        MqttCom.logger(command + " " + c + " " + variable + " = " + value);
+
+        if (variable == "printAllPacket") {
+            IthoReceive.printAllPacket = value == "true";
+            MqttCom.logger(variable + "=" + IthoReceive.printAllPacket);
+        }
+
+        if (variable == "printNonRemote") {
+            IthoReceive.printNonRemote = value == "true";
+            MqttCom.logger(variable + "=" + IthoReceive.printNonRemote);
+        }
+
     }
 }
 

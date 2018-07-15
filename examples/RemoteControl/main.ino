@@ -47,8 +47,11 @@ void setup()
     IthoReceive.setInterruptPin(2);
     IthoReceive.printAllPacket = false;
     IthoReceive.printNonRemote = false;
-    IthoReceive.setup();
+
+    IthoReceive.logger(logger);
     IthoSender.logger(logger);
+
+    IthoReceive.setup();
 
     setupIr();
 
