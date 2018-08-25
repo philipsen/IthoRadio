@@ -12,6 +12,8 @@ public:
   String incomingTopic;
   String clientName;
   void logger(const String& m);
+
+  void logInfo();
   
 public:
   PubSubClient *_client;

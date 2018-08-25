@@ -6,6 +6,8 @@
 void receiveIRCommand();
 
 // IR commands from AEG hob2hood device
+const long IRCMD_STOVE_ON = -502781636;
+const long IRCMD_STOVE_OFF = 615315783;
 const long IRCMD_VENT_1 = 0xE3C01BE2;
 const long IRCMD_VENT_2 = 0xD051C301;
 const long IRCMD_VENT_3 = 0xC22FFFD7;
@@ -46,9 +48,21 @@ void receiveIRCommand()
         int ventilation = 0;
         Serial.println("Received IR command: ");
         Serial.println((long)results.value, HEX);
-        MqttCom.logger(String("received "));
+        MqttCom.logger(String("receivedraw/") + String((long)results.value));
         switch ((long)results.value)
         {
+        case IRCMD_STOVE_ON:
+            MqttCom.logger("turn stove on");
+            ventilation = -1;
+            IthoSender.turnOff();
+            break;
+
+       case IRCMD_STOVE_OFF:
+            MqttCom.logger("turn stove off");
+            ventilation = -2;
+            IthoSender.turnOff();
+            break;
+
         case IRCMD_VENT_1:
             MqttCom.logger("turn on");
             ventilation = 1;
@@ -79,6 +93,7 @@ void receiveIRCommand()
             break;
         }
         printf("vent = %d\n", ventilation);
+        MqttCom.logger(String("stove/") + String(ventilation));
 
         irrecv.resume(); // receive the next value
     }

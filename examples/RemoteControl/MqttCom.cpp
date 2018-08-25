@@ -3,6 +3,7 @@
 #include "MqttCom.h"
 #include "ESP8266WiFi.h"
 #include <PubSubClient.h>
+#include <WiFiManager.h>
 
 #include <IthoReceive.h>
 
@@ -28,9 +29,22 @@ void callback(char *topic, byte *payload, unsigned int length)
         IthoSender.sendCommand(c);
     }
 
+    if (command == "info") {
+        MqttCom.logInfo();
+    }
+
     if (command == "reset") {
         MqttCom.logger("resetting");
-        setupWifi(true);
+        //setupWifi(true);
+        Serial.println("start config panel");
+        WiFiManager wifiManager;
+        wifiManager.resetSettings();
+        delay(3000);
+        Serial.println("reset esp");
+        ESP.reset();
+        delay(3000);-
+        //wifiManager.startConfigPortal("OnDemandAP");
+        Serial.println("connected...yeey :)");
     }
 
     if (command == "set") {
@@ -59,7 +73,7 @@ MqttComClass::MqttComClass(const String &t) : incomingTopic(t)
 void MqttComClass::setup()
 {
     //connect to MQTT server
-    _client->setServer("gc.cwvzuidpoort.org", 1883);
+    _client->setServer("167.99.32.103", 1883);
     _client->setCallback(callback);
 
     // force connecting
@@ -82,6 +96,17 @@ void MqttComClass::publish(const char *c, const char *m)
     _client->publish(c, m);
 }
 
+void MqttComClass::logInfo()
+{
+    char buf[20];
+    IPAddress ip = WiFi.localIP();
+    sprintf(buf, "ip/%u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]);
+
+    String m = String("connected ip = ") + String(WiFi.localIP());
+    logger(buf);
+    logger(String("topic/") + incomingTopic);
+}
+
 void MqttComClass::_reconnect()
 {
     // Loop until we're reconnected
@@ -89,7 +114,7 @@ void MqttComClass::_reconnect()
     {
         //Serial.print("Attempting MQTT connection...");
         // Attempt to connect, just a name to identify the client
-        if (_client->connect(clientName.c_str()))
+        if (_client->connect(clientName.c_str(), "itho", "aapnootmies"))
         {
             //Serial.println("connected");
             // Once connected, publish an announcement...
@@ -99,13 +124,7 @@ void MqttComClass::_reconnect()
             {
                 _client->subscribe(incomingTopic.c_str(), 0);
             }
-            char buf[20];
-            IPAddress ip = WiFi.localIP();
-            sprintf(buf, "ip/%u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]);
-
-            String m = String("connected ip = ") + String(WiFi.localIP());
-            logger(buf);
-            logger(String("topic/") + incomingTopic);
+            logInfo();
         }
         else
         {
@@ -121,7 +140,7 @@ void MqttComClass::_reconnect()
 
 void MqttComClass::logger(const String& m)
 {
-    publish((String("itho/") + clientName + String("/log")).c_str(), m.c_str());
+    publish((String("itho/log/") + clientName).c_str(), m.c_str());
 }
 
 MqttComClass MqttCom("ithoin");

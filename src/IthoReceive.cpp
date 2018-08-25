@@ -135,7 +135,7 @@ void IthoReceiveClass::loop()
                             //Serial.println(IthoDecode::toPrintString(dc));
                             IthoCommand cmd(s);
                             Serial.println(cmd.toString());
-                            _log(String("rem: ") + IthoDecode::toPrintString(s));
+                            _log(String("remote/") + IthoDecode::toPrintString(s));
                         }
                     }
                     else
