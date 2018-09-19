@@ -105,6 +105,9 @@ void MqttComClass::logInfo()
     String m = String("connected ip = ") + String(WiFi.localIP());
     logger(buf);
     logger(String("topic/") + incomingTopic);
+    logger(String("printNonRemote=") + IthoReceive.printNonRemote);
+    logger(String("printAllPacket=") + IthoReceive.printAllPacket);
+    logger(String("printDebug=") + IthoReceive.printDebug);
 }
 
 void MqttComClass::_reconnect()
