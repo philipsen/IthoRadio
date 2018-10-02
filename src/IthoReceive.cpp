@@ -136,6 +136,7 @@ void IthoReceiveClass::loop()
                             IthoCommand cmd(s);
                             Serial.println(cmd.toString());
                             _log(String("remote/") + IthoDecode::toPrintString(s));
+                            _log(String("send/remote/") + cmd.id().toString() + "/" + cmd.command().toString());
                         }
                     }
                     else

@@ -41,6 +41,7 @@ void setup()
 
     MqttCom.clientName = house_token;
     MqttCom.incomingTopic = String(house_token) + "/+/+";
+    MqttCom.incomingTopic2 = String("itho/") + String(house_token) + "/#";
     MqttCom.setup();
 
     Serial.println("IthoReceive.setInterruptPin");

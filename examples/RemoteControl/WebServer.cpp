@@ -40,7 +40,7 @@ void handleSend()
     if (id == "k")
     {
         IthoSender.sendCommandRoom("auto1");
-        IthoSender.sendCommand(command);
+        IthoSender.sendCommand("oldWebInterface", command);
     }
     else
     {

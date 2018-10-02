@@ -10,6 +10,7 @@ public:
   void loop();
   void publish(const char *c, const char *m);
   String incomingTopic;
+  String incomingTopic2;
   String clientName;
   void logger(const String& m);
 

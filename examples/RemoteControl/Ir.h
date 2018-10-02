@@ -54,38 +54,38 @@ void receiveIRCommand()
         case IRCMD_STOVE_ON:
             MqttCom.logger("turn stove on");
             ventilation = -1;
-            IthoSender.turnOff();
+            IthoSender.turnOff("stove");
             break;
 
        case IRCMD_STOVE_OFF:
             MqttCom.logger("turn stove off");
             ventilation = -2;
-            IthoSender.turnOff();
+            IthoSender.turnOff("stove");
             break;
 
         case IRCMD_VENT_1:
             MqttCom.logger("turn on");
             ventilation = 1;
-            IthoSender.turnOn();
+            IthoSender.turnOn("stove");
             break;
 
         case IRCMD_VENT_2:
             ventilation = 2;
-            IthoSender.turnOn();
+            IthoSender.turnOn("stove");
             break;
 
         case IRCMD_VENT_3:
             ventilation = 3;
-            IthoSender.turnOn();
+            IthoSender.turnOn("stove");
             break;
 
         case IRCMD_VENT_4:
             ventilation = 4;
-            IthoSender.turnOn();
+            IthoSender.turnOn("stove");
             break;
 
         case IRCMD_VENT_OFF:
-            IthoSender.turnOff();
+            IthoSender.turnOff("stove");
             ventilation = 0;
             break;
         default:

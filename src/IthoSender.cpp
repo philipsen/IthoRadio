@@ -8,14 +8,14 @@
 #include "RemoteCommand.h"
 
 
-void IthoSenderClass::sendCommand(const String &c)
+void IthoSenderClass::sendCommand(const String& sender, const String &c)
 {
     Serial.print("send command: ");
     Serial.println(c);
-    _log(String("send/") + c);
+    //_log(String("send/") + c);
     const RemoteCommand* remoteCommand = _lookupByName(c, commands);
     if (remoteCommand == NULL) return;
-    _send(_remoteId, remoteCommand);
+    _send(sender, _remoteId, remoteCommand);
 }
 
 void IthoSenderClass::sendCommandRoom(const String &c)
@@ -25,17 +25,38 @@ void IthoSenderClass::sendCommandRoom(const String &c)
     _log(String("sendRoom/") + c);
     const RemoteCommand* remoteCommand = _lookupByName(c, commandsRoom);
     if (remoteCommand == NULL) return;
-    _send(_remoteIdRoom, remoteCommand);
+    _send("oldWebInterface", _remoteIdRoom, remoteCommand);
 }
 
-void IthoSenderClass::_send(uint8_t remoteId[], const RemoteCommand* remoteCommand)
+void IthoSenderClass::sendCommand(const String& sender, const String &remote, const String& remoteCommand)
 {
+    //_log(String("IthoSenderClass::sendCommand ") + sender + " " + remote);
+    ByteArray id(remote);
+    ByteArray cc(remoteCommand);
+    String ss = id.toString();
+    //_log(String("ByteArrays id=") + ss);
+    _send(sender, id, cc);    
+}
+
+void IthoSenderClass::_send(const String& sender, uint8_t remoteId[], const RemoteCommand* remoteCommand)
+{
+    //_log(String("send/from/") + _remoteId + "/" + )
+
     unsigned int comLength = 0;
     const uint8_t* comBytes = remoteCommand->bytes;
     comLength = remoteCommand->length;
 
     ByteArray id(remoteId, 3);
     ByteArray cc(comBytes, comLength);
+
+    _send(sender, id, cc);
+
+}
+
+void IthoSenderClass::_send(const String& sender, ByteArray id, ByteArray cc)
+{
+    _log(String("send/") + sender + "/" + id.toString() + "/" + cc.toString());
+
     IthoCommand cmd(_remoteByte0, id, _counter, cc);
     String ps = cmd.toString();
     Serial.print("send cmd: ");
@@ -87,6 +108,7 @@ void IthoSenderClass::logger(void (*callback) (const String&))
 
 void IthoSenderClass::_log(const String &s)
 {
+    Serial.println(String("IthoSenderClass::_log ") + s);
     if (_logger != NULL) {
         _logger(s);
     }
