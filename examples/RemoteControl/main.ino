@@ -56,7 +56,6 @@ void setup()
     IthoReceive.logger(logger);
     IthoSender.logger(logger);
 
-
     IthoReceive.setup();
     setupIr();
 
