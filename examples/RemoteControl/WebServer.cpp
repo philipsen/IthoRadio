@@ -20,8 +20,6 @@ void handleNotFound()
     server.send(404, "text/plain", "404: Not found"); // Send HTTP status 404 (Not Found) when there's no handler for the URI in the request
 }
 
-const uint8_t keukenId[] = {0x52, 0x4d, 0x45};
-const uint8_t badkamerId[] = {0x74, 0xf3, 0xaf};
 
 void handleSend()
 {
@@ -33,9 +31,6 @@ void handleSend()
     }
     String id = server.arg("id");
     String command = server.arg("cmd");
-
-    IthoSender.remoteId(keukenId);
-    IthoSender.remoteIdRoom(badkamerId);
 
     if (id == "k")
     {
@@ -104,4 +99,9 @@ void setupWeb()
    // Add service to MDNS-SD
     MDNS.addService("http", "tcp", 80);
 
+}
+
+void loopWeb()
+{
+  server.handleClient(); // Listen for HTTP requests from clients
 }
