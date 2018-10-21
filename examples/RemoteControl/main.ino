@@ -2,12 +2,16 @@
 #include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
 #include <WiFiManager.h>
+#include "WifiSetup.h"
 
 #include <IthoReceive.h>
-#include "Ir.h"
 #include "MqttCom.h"
+
+#include "Ir.h"
 #include "Ota.h"
 
+
+#include <PubSubClient.h>
 
 void setupWifi();
 void setupWeb();
@@ -19,16 +23,17 @@ const uint8_t badkamerId[] = {0x74, 0xf3, 0xaf};
 
 void logger(const String& m)
 {
-    MqttCom.publish((String("itholog/") + remoteName).c_str(), m.c_str());
+    MqttCom.logger(m);
 }
+
 
 void setup()
 {
     Serial.begin(115200);
     Serial.println("\nBooting");
 
-    WiFiManager wifiManager;    //wifiManager.resetSettings();
-    wifiManager.autoConnect("AutoConnectAP", "123456");
+    setupWifi(false);
+
     if (MDNS.begin("ithoremote"))
         Serial.println("mDNS responder started");
     else
@@ -38,19 +43,24 @@ void setup()
 
     setupWeb();
 
-    MqttCom.incomingTopic = remoteName.c_str();
+    MqttCom.clientName = house_token;
+    MqttCom.incomingTopic = String(house_token) + "/+/+";
+    MqttCom.incomingTopic2 = String("itho/") + String(house_token) + "/#";
     MqttCom.setup();
 
+    Serial.println("IthoReceive.setInterruptPin");
     IthoReceive.setInterruptPin(2);
     IthoReceive.printAllPacket = false;
-    IthoReceive.printNonRemote = true;
-    IthoReceive.setup();
+    IthoReceive.printNonRemote = false;
+
+    IthoReceive.logger(logger);
     IthoSender.logger(logger);
 
-    IthoSender.remoteId(keukenId);
-    IthoSender.remoteIdRoom(badkamerId);
 
+    IthoReceive.setup();
     setupIr();
+
+    logger("setup done");
 }
 
 void loop()

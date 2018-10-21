@@ -52,6 +52,7 @@ void IthoReceiveClass::setup()
     attachIter();
 
     IthoCC1101.initReceive();
+    _log("IthoReceiveClass::setup done");
 }
 
 void IthoReceiveClass::attachIter()
@@ -107,7 +108,9 @@ void IthoReceiveClass::loop()
                 if (printAllPacket)
                 {
                     //Serial.println("");
-                    Serial.println(toString(rfData, i + 3, true));
+                    String s = toString(rfData, i + 3, true);
+                    Serial.println(s);
+                    _log(s);
                 }
                 bool isIthoRemote = true;
                 for (size_t i = 0; i < 6; i++)
@@ -125,18 +128,26 @@ void IthoReceiveClass::loop()
                     uint8_t crc = IthoDecode::crc(s);
                     if (s.charAt(0) == 0x16)
                     {
-                        Serial.printf("remote: ");
-                        //String dc = IthoDecode::decode(rfData, i);
-                        //Serial.println(IthoDecode::toPrintString(dc));
-                        IthoCommand cmd(s);
-                        Serial.println(cmd.toString());
+                        if (printOtherRemote)
+                        {
+                            Serial.printf("remote: ");
+                            //String dc = IthoDecode::decode(rfData, i);
+                            //Serial.println(IthoDecode::toPrintString(dc));
+                            IthoCommand cmd(s);
+                            Serial.println(cmd.toString());
+                            _log(String("remote/") + IthoDecode::toPrintString(s));
+                            _log(String("send/remote/") + cmd.id().toString() + "/" + cmd.command().toString());
+                        }
                     }
                     else
                     {
                         if (printNonRemote)
                         {
+                            String ss = String("non: ") + IthoDecode::toPrintString(s);
                             Serial.printf("other (crc=%d): ", crc);
-                            Serial.println(IthoDecode::toPrintString(s));
+                            Serial.println(ss);
+                            //_log("got non remote");
+                            _log(ss);
                         }
                     }
                 }
@@ -148,5 +159,18 @@ void IthoReceiveClass::loop()
         _oldSize = rfDataWriteIdx;
     }
 }
+
+void IthoReceiveClass::logger(void (*callback) (const String&))
+{
+    _logger = callback;
+}
+
+void IthoReceiveClass::_log(const String &s)
+{
+    if (_logger != NULL) {
+        _logger(s);
+    }
+}
+
 
 IthoReceiveClass IthoReceive;

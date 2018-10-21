@@ -43,6 +43,7 @@ class ByteArray
     }
 
     ByteArray(const BitArray&);
+    ByteArray(const String& value);
 
     unsigned int length() const { return _size; }
 
