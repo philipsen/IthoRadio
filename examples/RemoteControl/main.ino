@@ -10,12 +10,16 @@
 #include "Ir.h"
 #include "Ota.h"
 
+
 #include <PubSubClient.h>
 
 void setupWifi();
 void setupWeb();
+void loopWeb();
 
-String remoteName = "ithotest";
+String remoteName = "ithoin";
+const uint8_t keukenId[] = {0x52, 0x50, 0xb9};
+const uint8_t badkamerId[] = {0x74, 0xf3, 0xaf};
 
 void logger(const String& m)
 {
@@ -52,8 +56,8 @@ void setup()
     IthoReceive.logger(logger);
     IthoSender.logger(logger);
 
-    IthoReceive.setup();
 
+    IthoReceive.setup();
     setupIr();
 
     logger("setup done");
@@ -63,6 +67,7 @@ void loop()
 {
     ArduinoOTA.handle();
     IthoReceive.loop();
+    loopWeb();
     MqttCom.loop();
     loopIr();
 }
