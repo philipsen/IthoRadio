@@ -40,7 +40,7 @@ String IthoReceiveClass::toString(uint8_t *data, unsigned int length, bool ashex
     return str;
 }
 
-void ITHOinterrupt()
+void ICACHE_RAM_ATTR ITHOinterrupt()
 {
     size_t rb = IthoCC1101.receiveDataRaw(rfData + rfDataWriteIdx, LARGE_BUFFER_LEN - rfDataWriteIdx);
     rfDataWriteIdx += rb;
